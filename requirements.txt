@@ -1,1 +1,3 @@
 yfinance
+TA-Lib
+scikit-learn
