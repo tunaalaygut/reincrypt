@@ -1,9 +1,10 @@
+import os
 from data_reader import DataReader
 from train import Agent
 from model import ConvNN 
 
 
-DATA_DIR = ["../data_prep/output"]
+DATA_DIR = "../../output"
 
 filter_size = 5
 pool_size = 2
@@ -87,7 +88,8 @@ network = ConvNN(width,
 
 # Train Model
 # folder path for training
-X, y = data_reader.read(DATA_DIR)
+data_dirs = [os.path.join(DATA_DIR, curr_data) for curr_data in os.listdir(DATA_DIR)] 
+X, y = data_reader.read(data_dirs)
 
 model.set_data(X, y)
 model.train(width, 

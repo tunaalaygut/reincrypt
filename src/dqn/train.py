@@ -40,8 +40,8 @@ class Agent:
         self.X = X
         self.y = y
 
-        print(f'X Data: # Currencies = {len(self.X)}, # Days: {len(self.X[0])}')
-        print(f'y Data: # Currencies = {len(self.y)}, # Days: {len(self.y[0])}')
+        print(f'X Data: # Currencies = {len(self.X)}, # Days: {[len(cur) for cur in X]}')
+        print(f'y Data: # Currencies = {len(self.y)}, # Days: {[len(cur) for cur in y]}')
 
     def train(self, height, width, filter_size, pool_size, stride, num_actions, memory_size, gamma, learning_rate):
         online_network = ConvNN(height, width, filter_size, pool_size, stride, num_actions, learning_rate)
