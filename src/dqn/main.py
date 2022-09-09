@@ -1,10 +1,14 @@
 import os
+import sys
 from data_reader import DataReader
 from train import Agent
 from model import ConvNN 
+sys.path.append("../logging")
+from training_logger import TrainingLogger
 
 
 DATA_DIR = "../../output"
+EXPERIMENT_NAME = "deneme"
 
 filter_size = 5
 pool_size = 2
@@ -28,6 +32,23 @@ batch_size = 32            # batch size
 penalty = 0.05
 
 # initialize
+hyperparameters = {
+    "max_iterations": max_iterations,
+    "learning_rate": learning_rate,
+    "epsilon_min": epsilon_min,
+    "width": width,
+    "memory_size": memory_size,
+    "B": B,
+    "C": C,
+    "gamma": gamma,
+    "batch_size": batch_size,
+    "penalty": penalty
+}
+
+logger = TrainingLogger(name=EXPERIMENT_NAME, 
+                        hyperparameters=hyperparameters,
+                        tickers=os.listdir(DATA_DIR))
+
 data_reader = DataReader()
 model = Agent(1.0, 
               epsilon_min,
@@ -100,4 +121,6 @@ model.train(width,
             num_actions,
             memory_size,
             gamma,
-            learning_rate)
+            learning_rate,
+            logger)
+logger.save()

@@ -2,3 +2,5 @@
 *.rimg
 __pycache__/
 env/
+experimental/
+.vscode/

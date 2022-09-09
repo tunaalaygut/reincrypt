@@ -43,7 +43,7 @@ class Agent:
         print(f'X Data: # Currencies = {len(self.X)}, # Days: {[len(cur) for cur in X]}')
         print(f'y Data: # Currencies = {len(self.y)}, # Days: {[len(cur) for cur in y]}')
 
-    def train(self, height, width, filter_size, pool_size, stride, num_actions, memory_size, gamma, learning_rate):
+    def train(self, height, width, filter_size, pool_size, stride, num_actions, memory_size, gamma, learning_rate, logger):
         online_network = ConvNN(height, width, filter_size, pool_size, stride, num_actions, learning_rate)
         target_network = ConvNN(height, width, filter_size, pool_size, stride, num_actions, learning_rate)
 
@@ -121,6 +121,7 @@ class Agent:
                 # 2.3: print Loss
                 if(b % (100 * self.B) == 0):
                     print(f"#{b} -> Loss:{loss}")
+                    logger.add_loss(float(loss))
 
             b += 1  # update iteration counter
 
