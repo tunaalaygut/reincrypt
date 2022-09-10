@@ -2,7 +2,7 @@ from math import ceil
 import tensorflow as tf
 import numpy as np
 import random
-from model import ConvNN 
+from model import ViT 
 import experince_replay as exR
 
 
@@ -44,9 +44,9 @@ class Agent:
         print(f'y Data: # Currencies = {len(self.y)}, # Days: {[len(cur) for cur in y]}')
 
     def train(self, height, width, filter_size, pool_size, stride, num_actions, 
-              memory_size, gamma, learning_rate, logger):
-        online_network = ConvNN(height, width, filter_size, pool_size, stride, num_actions, learning_rate)
-        target_network = ConvNN(height, width, filter_size, pool_size, stride, num_actions, learning_rate)
+              memory_size, gamma, learning_rate, patch_size, resized_image_size, logger):
+        online_network = ViT(height, width, filter_size, pool_size, stride, num_actions, learning_rate, patch_size, resized_image_size)
+        target_network = ViT(height, width, filter_size, pool_size, stride, num_actions, learning_rate, patch_size, resized_image_size)
 
         # current experience
         prev_state = np.empty((1, height, width), dtype=np.float64)
@@ -279,7 +279,7 @@ class Agent:
         # print(tf.__version__)
 
         # construct Graph
-        C = ConvNN(H, W, FSize, PSize, PStride, NumAction)
+        C = ViT(H, W, FSize, PSize, PStride, NumAction)
         rho_eta = C.q_value(state, isTrain)
 
         sess = tf.compat.v1.Session(config=gpu_config)

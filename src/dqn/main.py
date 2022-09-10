@@ -2,7 +2,7 @@ import os
 import sys
 from data_reader import DataReader
 from train import Agent
-from model import ConvNN 
+from model import ViT 
 sys.path.append("../logging")
 from training_logger import TrainingLogger
 
@@ -28,8 +28,10 @@ B = 10  # parameter theta  update interval
 C = 1000  # parameter theta^* update interval ( TargetQ )
 gamma = 0.99  # discount factor
 batch_size = 32            # batch size
-# transaction panalty while training.  0.05 (%) for training, 0 for testing
+# transaction penalty while training.  0.05 (%) for training, 0 for testing
 penalty = 0.05
+patch_size = 6
+resized_image_size = 72
 
 # initialize
 hyperparameters = {
@@ -59,13 +61,16 @@ model = Agent(1.0,
               learning_rate,
               penalty)
 
-network = ConvNN(width, 
+network = ViT(width, 
                  width,
                  filter_size,
                  pool_size,
                  stride,
                  num_actions,
-                 learning_rate)
+                 learning_rate,
+                 patch_size,
+                 resized_image_size)
+
 ######## Test Model ###########
 
 # # folder list for testing 
@@ -122,5 +127,7 @@ model.train(width,
             memory_size,
             gamma,
             learning_rate,
+            patch_size,
+            resized_image_size,
             logger)
 logger.save()
