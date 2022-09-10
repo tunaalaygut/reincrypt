@@ -43,7 +43,8 @@ class Agent:
         print(f'X Data: # Currencies = {len(self.X)}, # Days: {[len(cur) for cur in X]}')
         print(f'y Data: # Currencies = {len(self.y)}, # Days: {[len(cur) for cur in y]}')
 
-    def train(self, height, width, filter_size, pool_size, stride, num_actions, memory_size, gamma, learning_rate, logger):
+    def train(self, height, width, filter_size, pool_size, stride, num_actions, 
+              memory_size, gamma, learning_rate, logger):
         online_network = ConvNN(height, width, filter_size, pool_size, stride, num_actions, learning_rate)
         target_network = ConvNN(height, width, filter_size, pool_size, stride, num_actions, learning_rate)
 
@@ -105,7 +106,7 @@ class Agent:
 
                 # 2.1:  update Target network parameter theta^*
                 if(b % (self.C * self.B) == 0):
-                    online_network.model.save('DeepQ')
+                    online_network.model.save(f"{logger.name}_model")
                     target_network.model.set_weights(
                         online_network.model.get_weights())
                     print("Updated target network weights.")
@@ -127,7 +128,7 @@ class Agent:
 
             # 4: Save model
             if(b >= self.max_iterations):
-                online_network.model.save('DeepQ')
+                online_network.model.save(f"{logger.name}_model")
                 print('Finish!')
                 return 0
 
