@@ -40,13 +40,19 @@ class Agent:
         self.X = X
         self.y = y
 
-        print(f'X Data: # Currencies = {len(self.X)}, # Days: {[len(cur) for cur in X]}')
-        print(f'y Data: # Currencies = {len(self.y)}, # Days: {[len(cur) for cur in y]}')
+        print(f'X: # Currencies = {len(self.X)}, # Days: {len(self.X[0])}')
+        print(f'y: # Currencies = {len(self.y)}, # Days: {len(self.y)[0]}')
 
-    def train(self, height, width, filter_size, pool_size, stride, num_actions, 
-              memory_size, gamma, learning_rate, patch_size, resized_image_size, logger):
-        online_network = ViT(height, width, filter_size, pool_size, stride, num_actions, learning_rate, patch_size, resized_image_size)
-        target_network = ViT(height, width, filter_size, pool_size, stride, num_actions, learning_rate, patch_size, resized_image_size)
+    def train(self, height, width, filter_size, 
+              pool_size, stride, num_actions, 
+              memory_size, gamma, learning_rate,
+              patch_size, resized_image_size, logger):
+        online_network = ViT(height, width, filter_size, 
+                             pool_size, stride, num_actions,
+                             learning_rate, patch_size, resized_image_size)
+        target_network = ViT(height, width, filter_size,
+                             pool_size, stride, num_actions,
+                             learning_rate, patch_size, resized_image_size)
 
         # current experience
         prev_state = np.empty((1, height, width), dtype=np.float64)
@@ -77,14 +83,16 @@ class Agent:
                 prev_action = self.get_randaction(num_actions)
             else:
                 # Or select the action based on the network's output
-                eta = online_network.q_value(prev_state.reshape(1, height, width), False)[1]
+                eta = online_network.q_value(
+                    prev_state.reshape(1, height, width), False)[1]
                 prev_action = eta
 
             # 1.4 get curA by applying epsilon greedy policy to curS
             if(self.randf(0, 1) <= self.epsilon):
                 cur_action = self.get_randaction(num_actions)
             else:
-                eta = online_network.q_value(cur_state.reshape(1, height, width), False)[1]
+                eta = online_network.q_value(
+                    cur_state.reshape(1, height, width), False)[1]
                 cur_action = eta
 
             # 1.5 get current reward and next state
@@ -153,7 +161,8 @@ class Agent:
 
 #### Testing functions ####
 
-    def validate_Neutralized_Portfolio(self, network, DataX, DataY, NumAction, H, W):
+    def validate_Neutralized_Portfolio(self, network, DataX, DataY,
+                                       NumAction, H, W):
 
         # list
         N = len(DataX)
@@ -178,11 +187,7 @@ class Agent:
 
                 # 1: choose action from current state
                 curS = DataX[c][t]
-                
-                # QAValues = sess.run(rho_eta, feed_dict={
-                #                     state: curS.reshape(1, H, W), isTrain: False})
                 QAValues = network.q_value(curS.reshape(1, H, W), False)
-                # curA[c] = np.round(QAValues[1].reshape((NumAction)))
                 curA[c] = np.round(QAValues[1])
 
             # set Neutralized portfolio for day t
@@ -206,7 +211,8 @@ class Agent:
         print('cumAsset ',  cumAsset)
         return N, posChange, cumAsset
 
-    def validate_TopBottomK_Portfolio(self, network, DataX, DataY, NumAction, H, W, K):
+    def validate_TopBottomK_Portfolio(self, network, DataX, DataY, 
+                                      NumAction, H, W, K):
 
         # list
         N = len(DataX)
@@ -239,10 +245,7 @@ class Agent:
 
                 # 1: choose action from current state
                 curS = DataX[c][t]
-                # QAValues = sess.run(rho_eta, feed_dict={
-                #                     state: curS.reshape(1, H, W), isTrain: False})
                 QAValues = network.q_value(curS.reshape(1, H, W), False)
-                # curActValue[c] = np.round(QAValues[0].reshape((NumAction)), 4)
                 curActValue[c] = np.round(QAValues[0], 4)
                 LongSignals[c] = curActValue[c][0] - curActValue[c][2]
 
