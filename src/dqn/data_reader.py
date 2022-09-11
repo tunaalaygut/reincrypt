@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from natsort import natsorted
 
 
 class DataReader:
@@ -21,12 +22,12 @@ class DataReader:
         print('numof all data: ', len(pathlist))
         return pathlist
 
-    def read(self, data_dirs: str) -> tuple:
+    def read(self, data_dirs: list) -> tuple:
         X, y = [], []
 
-        for data_dir in data_dirs:
+        for data_dir in natsorted(data_dirs):
             X_sub, y_sub = [], []
-            for rimg_file in sorted(os.listdir(data_dir)):
+            for rimg_file in natsorted(os.listdir(data_dir)):
                 filepath = os.path.join(data_dir, rimg_file)
                 with open(filepath, "r+") as f:
                     X_part, y_part = f.read().split("$")
