@@ -114,9 +114,6 @@ class ViT:
 
     def q_value(self, state, is_training):
         X = tf.reshape(state, [-1, self.height, self.width, 1])
-        mean, variance = tf.nn.moments(X, [0, 1, 2, 3])
-        X = self.__normalize_input(X, mean, variance)
-
         rho = self.model(X, training=is_training)
         eta = tf.one_hot(tf.argmax(rho, 1),
                          self.num_actions,
@@ -133,9 +130,5 @@ class ViT:
 
         grads = tape.gradient(loss, self.model.trainable_weights)
         self.optimizer.apply_gradients(zip(grads, self.model.trainable_weights))
-            
+
         return loss
-    
-    @staticmethod
-    def __normalize_input(X, mean, variance):
-        return (X - mean) / tf.sqrt(variance)

@@ -34,14 +34,13 @@ class Agent:
         self.penalty = penalty
         self.B = B
         self.C = C
-        
 
     def set_data(self, X, y):
         self.X = X
         self.y = y
 
         print(f'X: # Currencies = {len(self.X)}, # Days: {len(self.X[0])}')
-        print(f'y: # Currencies = {len(self.y)}, # Days: {len(self.y)[0]}')
+        print(f'y: # Currencies = {len(self.y)}, # Days: {len(self.y[0])}')
 
     def train(self, height, width, filter_size, 
               pool_size, stride, num_actions, 
@@ -83,16 +82,14 @@ class Agent:
                 prev_action = self.get_randaction(num_actions)
             else:
                 # Or select the action based on the network's output
-                eta = online_network.q_value(
-                    prev_state.reshape(1, height, width), False)[1]
+                eta = online_network.q_value(prev_state, False)[1]
                 prev_action = eta
 
             # 1.4 get curA by applying epsilon greedy policy to curS
             if(self.randf(0, 1) <= self.epsilon):
                 cur_action = self.get_randaction(num_actions)
             else:
-                eta = online_network.q_value(
-                    cur_state.reshape(1, height, width), False)[1]
+                eta = online_network.q_value(cur_state, False)[1]
                 cur_action = eta
 
             # 1.5 get current reward and next state
@@ -137,7 +134,7 @@ class Agent:
             # 4: Save model
             if(b >= self.max_iterations):
                 online_network.model.save(f"{logger.name}_model")
-                print('Finish!')
+                print('Training finished!')
                 return 0
 
 

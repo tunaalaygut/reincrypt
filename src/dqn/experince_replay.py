@@ -2,7 +2,6 @@ import numpy as np
 import tensorflow as tf
 import random 
 
-# no need tensorflow
 class exRep:
 
     def __init__( self, M, width, height ) :
@@ -74,7 +73,7 @@ class exRep:
             input_kth = self.curS[r_idxs[k]]
             action_kth = self.curA[r_idxs[k]]
 
-            q_act_values = target_network.q_value(self.nxtS[r_idxs[k]].reshape(1, self.H, self.W), is_training)
+            q_act_values = target_network.q_value(self.nxtS[r_idxs[k]], is_training)
             next_qs = q_act_values[0]
 
             target_kth = np.zeros(num_actions)
