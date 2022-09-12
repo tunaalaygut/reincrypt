@@ -53,7 +53,8 @@ class Agent:
                              pool_size, stride, num_actions,
                              learning_rate, patch_size, resized_image_size)
 
-        # current experience
+        target_network.model.set_weights(online_network.model.get_weights())
+
         prev_state = np.empty((1, height, width), dtype=np.float64)
         prev_action = np.empty((num_actions), dtype=np.int32)
         cur_state = np.empty((1, height, width), dtype=np.float64)
@@ -64,79 +65,53 @@ class Agent:
         b = 1  # iteration counter
 
         while True:
-            # 1.0 get random valid index c, t
-            # a random currency and a random time (day)
             c = random.randrange(0, len(self.X))
             t = random.randrange(1, len(self.X[c]) - 1)
 
-            # 1.1 get preS
-            # get the previous day of the day you randomly selected above
-            prev_state = self.X[c][t-1]
-            
-            # 1.3 get curS
             cur_state = self.X[c][t]
+            prev_state = self.X[c][t-1]
 
-            # 1.2 get preA by applying epsilon greedy policy to preS
             if(self.randf(0, 1) <= self.epsilon):
-                # Either get a random action
                 prev_action = self.get_randaction(num_actions)
             else:
-                # Or select the action based on the network's output
-                eta = online_network.q_value(prev_state, False)[1]
-                prev_action = eta
+                prev_action = online_network.q_value(prev_state, False)[1]
 
-            # 1.4 get curA by applying epsilon greedy policy to curS
             if(self.randf(0, 1) <= self.epsilon):
                 cur_action = self.get_randaction(num_actions)
             else:
-                eta = online_network.q_value(cur_state, False)[1]
-                cur_action = eta
+                cur_action = online_network.q_value(cur_state, False)[1]
 
-            # 1.5 get current reward and next state
-            cur_reward = self.get_reward(prev_action, cur_action, 
-                                         self.y[c][t], self.penalty)
-            
-            # get the next day of the day you randomly selected above
+            L = self.y[c][t]  # Next day return
+            reward = self.get_reward(prev_action, cur_action, L, self.penalty)
             next_state = self.X[c][t+1]
             
-            # 1.6 remember experience : tuple of curS, curA, curR, nxtS
-            memory.remember(cur_state, cur_action, cur_reward, next_state)
+            memory.remember(cur_state, cur_action, reward, next_state)
 
-            # 1.7: set new epsilon
             if (self.epsilon > self.epsilon_min):
                 self.epsilon = self.epsilon * 0.999999
-
-            # 2: update network parameter theta  every  B iteration
+            # TODO: Continue from here
             if (len(memory.current_state) >= memory_size) and (b % self.B == 0):
-
-                # 2.1:  update Target network parameter theta^*
                 if(b % (self.C * self.B) == 0):
                     online_network.model.save(f"{logger.name}_model")
                     target_network.model.set_weights(
                         online_network.model.get_weights())
                     print("Updated target network weights.")
-                    
 
-                # 2.2: sample batch_size size batch from memory buffer and 
-                # take gradient step with repect to network parameter theta
                 S, A, Y = memory.get_batch(target_network, False, 
                                            self.batch_size, num_actions, gamma)
                 
                 loss = online_network.optimize_q(S, A, Y, self.batch_size)
                 
-                # 2.3: print Loss
                 if(b % (100 * self.B) == 0):
                     print(f"#{b} -> Loss:{loss}")
                     logger.add_loss(float(loss))
 
-            b += 1  # update iteration counter
+            b += 1
 
-            # 4: Save model
             if(b >= self.max_iterations):
                 online_network.model.save(f"{logger.name}_model")
                 print('Training finished!')
                 return 0
-
 
     def get_randaction(self,  num_actions):
         rand_rho = tf.random.uniform((1, num_actions))
@@ -146,12 +121,13 @@ class Agent:
                           off_value=0,
                           dtype=tf.int32)
 
-    def get_reward(self, prev_action, cur_action, y, penalty):
+    # TODO: Make sure this works as intended.
+    def get_reward(self, prev_action, cur_action, L, penalty):
         # 1,0,-1 is assined to pre_act, cur_act
         # for action long, neutral, short respectively
         pre_act = 1 - np.argmax(prev_action)
         cur_act = 1 - np.argmax(cur_action)
-        return (cur_act * y) - penalty * abs(cur_act - pre_act)
+        return (cur_act * L) - penalty * abs(cur_act - pre_act)
     
     def randf(self,  s, e):
         return (float(random.randrange(0, (e - s) * 9999)) / 10000) + s
@@ -210,8 +186,6 @@ class Agent:
 
     def validate_TopBottomK_Portfolio(self, network, DataX, DataY, 
                                       NumAction, H, W, K):
-
-        # list
         N = len(DataX)
         Days = len(DataX[0])
 
@@ -270,13 +244,8 @@ class Agent:
         return N, posChange, cumAsset
 
     def TestModel_ConstructGraph(self, H, W, FSize, PSize, PStride,  NumAction):
-
-        # place holder
         state = tf.compat.v1.placeholder(tf.float32, [None, H, W])
         isTrain = tf.compat.v1.placeholder(tf.bool, [])
-
-        #print tf.shape( isTrain)
-        # print(tf.__version__)
 
         # construct Graph
         C = ViT(H, W, FSize, PSize, PStride, NumAction)
@@ -288,7 +257,6 @@ class Agent:
         return sess, saver, state, isTrain, rho_eta
 
     def Test_TopBottomK_Portfolio(self, network, H, W, NumAction, TopK):
-
         network.model = tf.keras.models.load_model('DeepQ')
 
         Outcome = self.validate_TopBottomK_Portfolio(
@@ -303,9 +271,7 @@ class Agent:
                                    H,
                                    W,
                                    NumAction):
-
         network.model = tf.keras.models.load_model('DeepQ')
-        # print(self.X)
         outcome = self.validate_Neutralized_Portfolio(
             network, self.X, self.y, NumAction, H, W)
 
@@ -316,7 +282,6 @@ class Agent:
         self.writeResult_daily('TestResult.txt', outcome, len(self.X[0]) - 1)
 
     def get_NeutralizedPortfolio(self, curA, N):
-
         alpha = np.zeros(N)
         avg = 0
 
@@ -343,14 +308,12 @@ class Agent:
         return alpha
 
     def givenLongSignals_getKTH(self, LongSignals, K):
-
         Num = ceil(len(LongSignals) * K)
         SortedLongS = np.sort(LongSignals)
 
         return SortedLongS[len(LongSignals) - Num], SortedLongS[Num-1]
 
     def get_TopBottomPortfolio(self, UprTH, LwrTH, LongSignals, N):
-
         alpha = np.zeros(N)
         sum_a = 0
 
