@@ -3,7 +3,7 @@ import tensorflow as tf
 import numpy as np
 import random
 from model import ViT 
-import experince_replay as exR
+from experince_replay import Memory
 
 
 gpu_config = tf.compat.v1.ConfigProto()
@@ -60,7 +60,7 @@ class Agent:
         cur_action = np.empty((num_actions), dtype=np.int32)
         next_state = np.empty((height, width), dtype=np.float64)
 
-        memory = exR.exRep(memory_size, width, height)  # memory buffer
+        memory = Memory(memory_size, width, height)  # memory buffer
         b = 1  # iteration counter
 
         while True:
@@ -107,7 +107,7 @@ class Agent:
                 self.epsilon = self.epsilon * 0.999999
 
             # 2: update network parameter theta  every  B iteration
-            if (len(memory.curS) >= memory_size) and (b % self.B == 0):
+            if (len(memory.current_state) >= memory_size) and (b % self.B == 0):
 
                 # 2.1:  update Target network parameter theta^*
                 if(b % (self.C * self.B) == 0):
