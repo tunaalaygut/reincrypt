@@ -4,7 +4,7 @@ import numpy as np
 import random
 from model import ViT 
 from experince_replay import Memory
-from time import time  # for experimenting purposes
+
 
 gpu_config = tf.compat.v1.ConfigProto()
 # only use required resource(memory)
