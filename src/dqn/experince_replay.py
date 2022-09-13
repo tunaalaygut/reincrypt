@@ -34,17 +34,18 @@ class Memory:
 
         # Get `batch_size` random index from a memory sized list
         rand_idxs = random.sample(range(len(self.current_state)), batch_size)
-        
+        q_act_values = target_network.q_value(
+            [self.next_state[r] for r in rand_idxs],
+            is_training)
+
         for k in range(batch_size):
             input_kth = self.current_state[rand_idxs[k]]
             action_kth = self.current_action[rand_idxs[k]]
-
-            q_act_values = target_network.q_value(self.next_state[rand_idxs[k]], 
-                                                  is_training)
-            next_qs = q_act_values[0]
+            
+            next_qs = q_act_values[0][k]
 
             target_kth = np.zeros(num_actions)
-            target_kth[np.argmax(action_kth)] = self.reward[rand_idxs[k]] + gamma * next_qs[0][tf.argmax(next_qs[0])]
+            target_kth[np.argmax(action_kth)] = self.reward[rand_idxs[k]] + gamma * next_qs[tf.argmax(next_qs)]
 
             cur_states[k] = input_kth
             cur_actions[k] = action_kth
@@ -52,5 +53,5 @@ class Memory:
             
             if np.isnan(target_kth).any():
                 print("Stop")
-    
+
         return cur_states, cur_actions, targets
