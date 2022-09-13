@@ -4,7 +4,7 @@ import numpy as np
 import random
 from model import ViT 
 from experince_replay import Memory
-
+from time import time  # for experimenting purposes
 
 gpu_config = tf.compat.v1.ConfigProto()
 # only use required resource(memory)
@@ -87,16 +87,11 @@ class Agent:
             
             memory.remember(cur_state, cur_action, reward, next_state)
 
-            if (self.epsilon > self.epsilon_min):
+            # TODO: Should we make epsilon get smaller faster?
+            if(self.epsilon > self.epsilon_min):
                 self.epsilon = self.epsilon * 0.999999
-            # TODO: Continue from here
-            if (len(memory.current_state) >= memory_size) and (b % self.B == 0):
-                if(b % (self.C * self.B) == 0):
-                    online_network.model.save(f"{logger.name}_model")
-                    target_network.model.set_weights(
-                        online_network.model.get_weights())
-                    print("Updated target network weights.")
 
+            if(b % self.B == 0 and len(memory.current_state) >= memory_size):
                 S, A, Y = memory.get_batch(target_network, False, 
                                            self.batch_size, num_actions, gamma)
                 
@@ -105,6 +100,12 @@ class Agent:
                 if(b % (100 * self.B) == 0):
                     print(f"#{b} -> Loss:{loss}")
                     logger.add_loss(float(loss))
+
+            if(b % (self.C * self.B) == 0):
+                online_network.model.save(f"{logger.name}_model")
+                target_network.model.set_weights(
+                    online_network.model.get_weights())
+                print("Updated target network weights.")
 
             b += 1
 
