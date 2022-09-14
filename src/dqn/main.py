@@ -19,7 +19,7 @@ num_actions = 3
 # hyper parameters described in the paper
 # max_iterations = 5000000       # maxmimum iteration number
 max_iterations = 50000       # maxmimum iteration number
-learning_rate = 0.00001       # learning rate
+learning_rate = 0.001       # learning rate
 epsilon_min = 0.1           # minimum epsilon
 
 width = 18  # input matrix size
