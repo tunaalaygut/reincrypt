@@ -126,9 +126,13 @@ class ViT:
     def optimize_q(self, S, action, target, batch_size):
         with tf.GradientTape() as tape:
             rho = self.q_value(S, True)[0]
-            loss = tf.reduce_sum(tf.square(target - (rho * action))) / batch_size
+            loss = self.__custom_loss_func(target, rho, action, batch_size)
 
         grads = tape.gradient(loss, self.model.trainable_weights)
         self.optimizer.apply_gradients(zip(grads, self.model.trainable_weights))
 
         return loss
+
+    @staticmethod
+    def __custom_loss_func(target, rho, action, batch_size):
+        return tf.reduce_sum(tf.square(target - (rho * action))) / batch_size
