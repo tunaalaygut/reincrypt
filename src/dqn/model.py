@@ -1,15 +1,7 @@
 import tensorflow as tf
-from keras.layers import (Layer,
-                          Dense,
-                          Flatten,
-                          Dropout,
-                          Embedding,
-                          Input,
-                          Normalization,
-                          Resizing,
-                          LayerNormalization,
-                          MultiHeadAttention,
-                          Add)
+from keras.layers import (Layer, Dense, Flatten, Dropout, Embedding, Input,
+                          Normalization, Resizing, LayerNormalization,
+                          MultiHeadAttention, Add)
 from keras.models import Model
 from keras.models import Sequential
 

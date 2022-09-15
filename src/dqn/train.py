@@ -1,8 +1,7 @@
-from math import ceil
-import tensorflow as tf
-import numpy as np
 import random
+import numpy as np
 from model import ViT 
+import tensorflow as tf
 from experince_replay import Memory
 
 
