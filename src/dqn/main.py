@@ -7,13 +7,11 @@ sys.path.append("../logging")
 from training_logger import TrainingLogger
 
 
-DATA_DIR = "../../output"
-EXPERIMENT_NAME = "deneme"
+# TODO: Implement arg parser instead of this
+DATA_DIR = sys.argv[1]
+EXPERIMENT_NAME = sys.argv[2]
 
-filter_size = 5
-pool_size = 2
-stride = 2
-num_actions = 3
+num_actions = 3  # buy, hold, sell
 
 
 # hyper parameters described in the paper
@@ -63,9 +61,6 @@ model = Agent(1.0,
 
 network = ViT(width, 
                  width,
-                 filter_size,
-                 pool_size,
-                 stride,
                  num_actions,
                  learning_rate,
                  patch_size,
@@ -120,9 +115,6 @@ X, y = data_reader.read(data_dirs)
 model.set_data(X, y)
 model.train(width, 
             width,
-            filter_size,
-            pool_size,
-            stride,
             num_actions,
             memory_size,
             gamma,

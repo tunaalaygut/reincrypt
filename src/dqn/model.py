@@ -47,14 +47,10 @@ class PatchEncoder(Layer):
         return encoded
 
 class ViT:
-    def __init__(self, height, width, filter_size, 
-                 pool_size, stride, num_actions, learning_rate, 
+    def __init__(self, height, width, num_actions, learning_rate, 
                  patch_size, resized_image_size):
         self.height = height
         self.width = width
-        self.filter_size = filter_size
-        self.pool_size = pool_size
-        self.stride = stride
         self.num_actions = num_actions
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
         self.patch_size = patch_size

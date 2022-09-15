@@ -42,15 +42,12 @@ class Agent:
         print(f'X: # Currencies = {len(self.X)}, # Days: {len(self.X[0])}')
         print(f'y: # Currencies = {len(self.y)}, # Days: {len(self.y[0])}')
 
-    def train(self, height, width, filter_size, 
-              pool_size, stride, num_actions, 
+    def train(self, height, width, num_actions, 
               memory_size, gamma, learning_rate,
               patch_size, resized_image_size, logger):
-        online_network = ViT(height, width, filter_size, 
-                             pool_size, stride, num_actions,
+        online_network = ViT(height, width, num_actions,
                              learning_rate, patch_size, resized_image_size)
-        target_network = ViT(height, width, filter_size,
-                             pool_size, stride, num_actions,
+        target_network = ViT(height, width, num_actions,
                              learning_rate, patch_size, resized_image_size)
 
         target_network.model.set_weights(online_network.model.get_weights())
