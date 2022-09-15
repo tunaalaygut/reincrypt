@@ -107,7 +107,7 @@ class ViT:
                          self.num_actions,
                          on_value=1,
                          off_value=0,
-                         dtype=tf.int32)
+                         dtype=tf.int64)
 
         return rho, eta
 

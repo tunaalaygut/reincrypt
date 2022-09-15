@@ -44,9 +44,9 @@ class Agent:
         target_network.model.set_weights(online_network.model.get_weights())
 
         prev_state = np.empty((1, height, width), dtype=np.float64)
-        prev_action = np.empty((num_actions), dtype=np.int32)
+        prev_action = np.empty((num_actions), dtype=np.int64)
         cur_state = np.empty((1, height, width), dtype=np.float64)
-        cur_action = np.empty((num_actions), dtype=np.int32)
+        cur_action = np.empty((num_actions), dtype=np.int64)
         next_state = np.empty((height, width), dtype=np.float64)
 
         memory = Memory(memory_size, width, height)  # memory buffer
@@ -108,7 +108,7 @@ class Agent:
                           num_actions,
                           on_value=1,
                           off_value=0,
-                          dtype=tf.int32)
+                          dtype=tf.int64)
 
     # TODO: Make sure this works as intended.
     def get_reward(self, prev_action, cur_action, L, penalty):
