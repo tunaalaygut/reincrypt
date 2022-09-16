@@ -4,14 +4,16 @@ from datetime import datetime
 
 
 class TrainingLogger:
-    def __init__(self, name:str, hyperparameters:dict, tickers:list):
+    def __init__(self, name:str, config:dict, tickers:list, 
+                 output_dir: str):
         self.name = name
         self.training_start = datetime.now()
         self.training_end = None
         self.training_duration = 0
         self.tickers = tickers
-        self.hyperparameters = hyperparameters
+        self.config = config
         self.losses = list()
+        self.output_dir = f"{output_dir}/{name}"
 
     def save(self):
         self.__finish_training()
@@ -21,13 +23,15 @@ class TrainingLogger:
             "training_end": str(self.training_end),
             "training_duration (m)": self.training_duration.total_seconds()//60,
             "tickers": self.tickers,
-            "hyperparameters": self.hyperparameters,
+            "config": self.config,
             "losses": self.losses 
         }
-        os.makedirs("log", exist_ok=True)
+        os.makedirs(f"{self.output_dir}", exist_ok=True)
+        
+        timestamp = int(self.training_start.timestamp())
+        
         with open(
-            f"log/{self.name}_training_log_{int(self.training_start.timestamp())}.json", 
-            "w+") as js:
+            f"{self.output_dir}/log_{timestamp}.json", "w+") as js:
             json.dump(result, js, indent=2)
 
     def add_loss(self, loss):

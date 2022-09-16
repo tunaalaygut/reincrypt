@@ -90,7 +90,8 @@ class Agent:
                     logger.add_loss(float(loss))
 
             if(b % (self.C * self.B) == 0):
-                online_network.model.save(f"{logger.name}_model")
+                online_network.model.save(
+                    f"{logger.output_dir}/{logger.name}_model")
                 target_network.model.set_weights(
                     online_network.model.get_weights())
                 print("Updated target network weights.")
@@ -98,7 +99,8 @@ class Agent:
             b += 1
 
             if(b >= self.max_iterations):
-                online_network.model.save(f"{logger.name}_model")
+                online_network.model.save(
+                    f"{logger.output_dir}/{logger.name}_model")
                 print('Training finished!')
                 return 0
 
