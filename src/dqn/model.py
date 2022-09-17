@@ -116,8 +116,9 @@ class ViT:
             rho = self.q_value(S, True)[0]
             loss = self.__custom_loss_func(target, rho, action, batch_size)
 
-        grads = tape.gradient(loss, self.model.trainable_weights)
-        self.optimizer.apply_gradients(zip(grads, self.model.trainable_weights))
+        grads = tape.gradient(loss, self.model.trainable_variables)
+        self.optimizer.apply_gradients(zip(grads, 
+                                           self.model.trainable_variables))
 
         return loss
 
