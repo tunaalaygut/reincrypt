@@ -80,7 +80,7 @@ class Agent:
                 self.epsilon = self.epsilon * 0.999999
 
             if(b % self.B == 0 and len(memory.current_state) >= memory_size):
-                S, A, Y = memory.get_batch(target_network, False, 
+                S, A, Y = memory.get_batch(target_network, 
                                            self.batch_size, num_actions, gamma)
                 
                 loss = online_network.optimize_q(S, A, Y, self.batch_size)

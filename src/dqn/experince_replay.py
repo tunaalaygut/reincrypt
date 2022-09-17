@@ -27,7 +27,7 @@ class Memory:
             del self.reward[0]
             del self.next_state[0]
 
-    def get_batch(self, target_network, is_training, batch_size, num_actions, gamma):
+    def get_batch(self, target_network, batch_size, num_actions, gamma):
         cur_states = np.zeros((batch_size, self.H, self.W))
         cur_actions = np.zeros((batch_size, num_actions))
         targets = np.zeros((batch_size, num_actions))
@@ -36,7 +36,7 @@ class Memory:
         rand_idxs = random.sample(range(len(self.current_state)), batch_size)
         q_act_values = target_network.q_value(
             [self.next_state[r] for r in rand_idxs],
-            is_training)
+            False)
 
         for k in range(batch_size):
             input_kth = self.current_state[rand_idxs[k]]
