@@ -51,17 +51,10 @@ class ViT:
 
     def create_vit_classifier(self):
         inputs = Input(shape=(self.height, self.width, 1))
-        # TODO: Do we need to augment data? 
-        data_augmentation = Sequential(
-            [
-                Normalization(),
-                Resizing(self.resized_image_size, self.resized_image_size)
-            ])
-        augmented = data_augmentation(inputs)
         # Create patches. 
-        patches = Patches(self.patch_size)(augmented)
+        patches = Patches(self.patch_size)(inputs)
         # Encode patches.
-        num_patches = (self.resized_image_size // self.patch_size) ** 2
+        num_patches = (self.height // self.patch_size) ** 2
         encoded_patches = PatchEncoder(num_patches, 64)(patches)
 
         # Create multiple layers of the Transformer block.
