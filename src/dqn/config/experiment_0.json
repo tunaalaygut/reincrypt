@@ -1,6 +1,6 @@
 {
     "num_actions": 3,
-    "max_iterations": 5000,
+    "max_iterations": 50000,
     "learning_rate": 0.001,
     "epsilon_min": 0.1,
     "width": 18,
@@ -10,6 +10,5 @@
     "gamma": 0.99,
     "batch_size": 32,
     "penalty": 0.05,
-    "patch_size": 6,
-    "resized_image_size": 72
+    "patch_size": 6
 }

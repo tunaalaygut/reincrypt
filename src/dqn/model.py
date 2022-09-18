@@ -40,13 +40,12 @@ class PatchEncoder(Layer):
 
 class ViT:
     def __init__(self, height, width, num_actions, learning_rate, 
-                 patch_size, resized_image_size):
+                 patch_size):
         self.height = height
         self.width = width
         self.num_actions = num_actions
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
         self.patch_size = patch_size
-        self.resized_image_size = resized_image_size
         self.model = self.create_vit_classifier()
 
     def create_vit_classifier(self):

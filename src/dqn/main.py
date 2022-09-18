@@ -36,7 +36,7 @@ def main():
 
     model.train(CONFIG["width"], CONFIG["width"], CONFIG["num_actions"], 
                 CONFIG["memory_size"], CONFIG["gamma"], CONFIG["learning_rate"],
-                CONFIG["patch_size"], CONFIG["resized_image_size"], logger)
+                CONFIG["patch_size"], logger)
 
     logger.save()
 
