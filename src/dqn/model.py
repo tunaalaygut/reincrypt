@@ -1,9 +1,7 @@
 import tensorflow as tf
 from keras.layers import (Layer, Dense, Flatten, Dropout, Embedding, Input,
-                          Normalization, Resizing, LayerNormalization,
-                          MultiHeadAttention, Add)
+                          LayerNormalization, MultiHeadAttention, Add)
 from keras.models import Model
-from keras.models import Sequential
 
 
 class Patches(Layer):
@@ -39,16 +37,15 @@ class PatchEncoder(Layer):
         return encoded
 
 class ViT:
-    def __init__(self, height, width, num_actions, learning_rate, 
-                 patch_size):
+    def __init__(self, height, width, num_actions, learning_rate, patch_size):
         self.height = height
         self.width = width
         self.num_actions = num_actions
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
         self.patch_size = patch_size
-        self.model = self.create_vit_classifier()
+        self.model = self.create_vit()
 
-    def create_vit_classifier(self):
+    def create_vit(self):
         inputs = Input(shape=(self.height, self.width, 1))
         # Create patches. 
         patches = Patches(self.patch_size)(inputs)
