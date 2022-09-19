@@ -60,12 +60,12 @@ class Agent:
             prev_state = self.X[c][t-1]
 
             if(self.randf(0, 1) <= self.epsilon):
-                prev_action = self.get_randaction(num_actions)
+                prev_action = self.get_random_action(num_actions)
             else:
                 prev_action = online_network.q_value(prev_state, False)[1]
 
             if(self.randf(0, 1) <= self.epsilon):
-                cur_action = self.get_randaction(num_actions)
+                cur_action = self.get_random_action(num_actions)
             else:
                 cur_action = online_network.q_value(cur_state, False)[1]
 
@@ -104,7 +104,7 @@ class Agent:
                 print('Training finished!')
                 return 0
 
-    def get_randaction(self,  num_actions):
+    def get_random_action(self,  num_actions):
         rand_rho = tf.random.uniform((1, num_actions))
         return tf.one_hot(tf.argmax(rand_rho, 1),
                           num_actions,
@@ -112,7 +112,6 @@ class Agent:
                           off_value=0,
                           dtype=tf.int64)
 
-    # TODO: Make sure this works as intended.
     def get_reward(self, prev_action, cur_action, L, penalty):
         # 1,0,-1 is assined to pre_act, cur_act
         # for action long, neutral, short respectively
