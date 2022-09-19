@@ -14,7 +14,7 @@ def main():
     plt.imshow(__str_to_ndarray(pixels.strip()))
     plt.show()
 
-
+# TODO: Date reader uses this function as well. Make it available as util.
 def __str_to_ndarray(str: str) -> np.ndarray:
     rows = str.split('\n')
     arr = np.ndarray((len(rows), len(rows[0].split())))
