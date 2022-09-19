@@ -17,6 +17,7 @@ def main():
         try:
             df = pd.read_csv(os.path.join(INPUT_DIR, input_file))
             currency_symbol = input_file.split("_")[1].split(".")[0]
+            print(f"\nTrying to create image data for {currency_symbol}.")
             tis = np.zeros((18, 18, len(df)))
             intervals = range(7, 25)
 
@@ -81,43 +82,38 @@ def main():
                     delete_idx.append(idx)
             images_new = np.delete(images_new, delete_idx, axis=0)
 
-            scaled_images = []
-            # TODO: Consider column based scaling
-            for idx, im in enumerate(images_new):
-                scaled_im = minmax_scale(im.astype(int), (0,255))
-                scaled_images.append(scaled_im)
-
-
-            # TODO: what is this value referred to as in the paper?
-            gains = []
-
+            scalars = []
             for i in range(len(df)):
                 if i == len(df) - 1:
                     delta = 0
                 else:
-                    delta = df.Close[i] - df.Close[i+1]
-                gains.append(f'{str(100 * delta / df.Close[i])}\n')
+                    delta = df.Close[i+1] - df.Close[i]
+                scalar = 100 * delta / df.Close[i]
+                scalars.append(f'{str(scalar)}\n')
 
-            for d in delete_idx:
-                del gains[d]
+            scalars = np.delete(np.array(scalars), delete_idx).tolist()
 
             os.makedirs(os.path.join(OUTPUT_DIR, currency_symbol), 
                         exist_ok=True)
 
-            for idx, (gain, scaled_image) in enumerate(zip(gains, scaled_images), 
-                                                    start=0):
+            scaled_images = []
+            for idx, im in enumerate(images_new):
+                scaled_im = minmax_scale(im, (0,255)).astype(int)
+                scaled_images.append(scaled_im)
+
+            for idx, (scalar, image) in enumerate(zip(scalars, scaled_images),
+                                                  start=0):
                 image_bytes = io.BytesIO()
-                np.savetxt(image_bytes, scaled_image, fmt="%03d")
-                # TODO: Update this variable name ASAP
-                mystr = image_bytes.getvalue().decode() + "$\n" + gain
+                np.savetxt(image_bytes, image, fmt="%03d")
+                output_str = image_bytes.getvalue().decode() + "$\n" + scalar
                 image_bytes.close()
 
                 with open(f'{OUTPUT_DIR}/{currency_symbol}/image_{idx}.rimg', 
                         'w+') as f:
-                    f.write(mystr)
-            print(f"Image data for {currency_symbol} created successfully.")
+                    f.write(output_str)
+            print(f"Image data for {currency_symbol} created successfully.\n")
         except:
-            print(f"Failed {currency_symbol}.")
+            print(f"Failed {currency_symbol}.\n")
             pass
 
 
