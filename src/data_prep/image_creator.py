@@ -89,7 +89,14 @@ def main():
                     delta = 0
                 else:
                     delta = df.Close[i+1] - df.Close[i]
-                scalar = 100 * delta / df.Close[i]
+
+                if df.Close[i] != 0:
+                    scalar = 100 * delta / df.Close[i]
+                elif df.Close[i] == 0 and df.Close[i+1] - df.Close[i] == 0:
+                    scalar = 0
+                else:
+                    scalar = 100
+
                 scalars.append(f'{str(scalar)}\n')
                 dates.append(f"{str(df.Date[i])}")
 
@@ -117,8 +124,8 @@ def main():
                         'w+') as f:
                     f.write(output_str)
             print(f"Image data for {currency_symbol} created successfully.\n")
-        except:
-            print(f"Failed {currency_symbol}.\n")
+        except Exception as e:
+            print(f"Failed {currency_symbol}. {e}\n")
             pass
 
 
