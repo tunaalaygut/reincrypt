@@ -83,6 +83,7 @@ def main():
             images_new = np.delete(images_new, delete_idx, axis=0)
 
             scalars = []
+            dates = []
             for i in range(len(df)):
                 if i == len(df) - 1:
                     delta = 0
@@ -90,8 +91,10 @@ def main():
                     delta = df.Close[i+1] - df.Close[i]
                 scalar = 100 * delta / df.Close[i]
                 scalars.append(f'{str(scalar)}\n')
+                dates.append(f"{str(df.Date[i])}")
 
             scalars = np.delete(np.array(scalars), delete_idx).tolist()
+            dates = np.delete(np.array(dates), delete_idx).tolist()
 
             os.makedirs(os.path.join(OUTPUT_DIR, currency_symbol), 
                         exist_ok=True)
@@ -105,7 +108,9 @@ def main():
                                                   start=0):
                 image_bytes = io.BytesIO()
                 np.savetxt(image_bytes, image, fmt="%03d")
-                output_str = image_bytes.getvalue().decode() + "$\n" + scalar
+                output_str = image_bytes.getvalue().decode() \
+                    + "$\n" + scalar \
+                    + "$\n" + dates[idx]
                 image_bytes.close()
 
                 with open(f'{OUTPUT_DIR}/{currency_symbol}/image_{idx}.rimg', 
