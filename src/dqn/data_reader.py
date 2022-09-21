@@ -30,7 +30,7 @@ class DataReader:
             for rimg_file in natsorted(os.listdir(data_dir)):
                 filepath = os.path.join(data_dir, rimg_file)
                 with open(filepath, "r+") as f:
-                    X_part, y_part = f.read().split("$")
+                    X_part, y_part, _ = f.read().split("$")
                     X_sub.append(self.__str_to_ndarray(X_part.strip()))
                     y_sub.append(float(y_part.strip()))
             X.append(X_sub)
