@@ -24,7 +24,8 @@ def main():
 
     data_reader = DataReader()
 
-    model = Agent(epsilon_init=1.0, epsilon_min=CONFIG["epsilon_min"], 
+    model = Agent(epsilon_init=CONFIG["epsilon_init"],
+                  epsilon_min=CONFIG["epsilon_min"], 
                   max_iterations=CONFIG["max_iterations"], 
                   batch_size=CONFIG["batch_size"], B=CONFIG["B"], C=CONFIG["C"], 
                   penalty=CONFIG["penalty"])
