@@ -13,7 +13,7 @@ gpu_config.gpu_options.per_process_gpu_memory_fraction = 0.5  # restrict to 50%
 
 class Agent:
     def __init__(self, epsilon_init, epsilon_min, max_iterations, batch_size, B,
-                 C, learning_rate, penalty):
+                 C, penalty):
         self.X = list()
         self.y = list()
 
@@ -22,7 +22,6 @@ class Agent:
 
         self.max_iterations = max_iterations
         self.batch_size = batch_size
-        self.learning_rate = learning_rate
         self.penalty = penalty
         self.B = B
         self.C = C
@@ -35,11 +34,24 @@ class Agent:
         print(f'y: # Currencies = {len(self.y)}, # Days: {len(self.y[0])}')
 
     def train(self, height, width, num_actions, memory_size, gamma,
-              learning_rate, patch_size, logger):
-        online_network = ViT(height, width, num_actions,
-                             learning_rate, patch_size)
-        target_network = ViT(height, width, num_actions,
-                             learning_rate, patch_size)
+              learning_rate, patch_size, projection_dim, mlp_head_units, 
+              transformer_units, num_heads, transformer_layers, logger):
+        online_network = ViT(height=height, width=width, 
+                             num_actions=num_actions,
+                             learning_rate=learning_rate, patch_size=patch_size,
+                             projection_dim=projection_dim, 
+                             mlp_head_units=mlp_head_units, 
+                             transformer_units=transformer_units, 
+                             num_heads=num_heads, 
+                             transformer_layers=transformer_layers)
+        target_network = ViT(height=height, width=width, 
+                             num_actions=num_actions,
+                             learning_rate=learning_rate, patch_size=patch_size,
+                             projection_dim=projection_dim, 
+                             mlp_head_units=mlp_head_units, 
+                             transformer_units=transformer_units, 
+                             num_heads=num_heads, 
+                             transformer_layers=transformer_layers)
 
         target_network.model.set_weights(online_network.model.get_weights())
 

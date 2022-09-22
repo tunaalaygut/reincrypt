@@ -37,12 +37,19 @@ class PatchEncoder(Layer):
         return encoded
 
 class ViT:
-    def __init__(self, height, width, num_actions, learning_rate, patch_size):
+    def __init__(self, height, width, num_actions, learning_rate, patch_size,
+                 projection_dim, mlp_head_units, transformer_units, num_heads,
+                 transformer_layers):
         self.height = height
         self.width = width
         self.num_actions = num_actions
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
         self.patch_size = patch_size
+        self.projection_dim = projection_dim
+        self.mlp_head_units = mlp_head_units
+        self.transformer_units = transformer_units
+        self.num_heads = num_heads
+        self.transformer_layers = transformer_layers
         self.model = self.create_vit()
 
     def create_vit(self):
@@ -51,22 +58,25 @@ class ViT:
         patches = Patches(self.patch_size)(inputs)
         # Encode patches.
         num_patches = (self.height // self.patch_size) ** 2
-        encoded_patches = PatchEncoder(num_patches, 64)(patches)
+        encoded_patches = PatchEncoder(num_patches, 
+                                       self.projection_dim)(patches)
 
         # Create multiple layers of the Transformer block.
-        for _ in range(8):
+        for _ in range(self.transformer_layers):
             # Layer normalization 1.
             x1 = LayerNormalization(epsilon=1e-6)(encoded_patches)
             # Create a multi-head attention layer.
             attention_output = MultiHeadAttention(
-                num_heads=4, key_dim=64, dropout=0.1
+                num_heads=self.num_heads, key_dim=self.projection_dim, 
+                dropout=0.1
             )(x1, x1)
             # Skip connection 1.
             x2 = Add()([attention_output, encoded_patches])
             # Layer normalization 2.
             x3 = LayerNormalization(epsilon=1e-6)(x2)
             # MLP.
-            x3 = self.mlp(x3, hidden_units=[128, 64], dropout_rate=0.1)
+            x3 = self.mlp(x3, hidden_units=self.transformer_units, 
+                          dropout_rate=0.1)
             # Skip connection 2.
             encoded_patches = Add()([x3, x2])
 
@@ -75,7 +85,7 @@ class ViT:
         representation = Flatten()(representation)
         representation = Dropout(0.5)(representation)
         # Add MLP.
-        features = self.mlp(representation, hidden_units=[2048, 1024], 
+        features = self.mlp(representation, hidden_units=self.mlp_head_units, 
                             dropout_rate=0.5)
         # Classify outputs.
         logits = Dense(3)(features)
