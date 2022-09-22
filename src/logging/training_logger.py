@@ -4,21 +4,19 @@ from datetime import datetime
 
 
 class TrainingLogger:
-    def __init__(self, name:str, config:dict, tickers:list, 
-                 output_dir: str):
-        self.name = name
+    def __init__(self, config:dict, tickers:list, output_dir: str):
+        self.name = config['experiment_name']
         self.training_start = datetime.now()
         self.training_end = None
         self.training_duration = 0
         self.tickers = tickers
         self.config = config
         self.losses = list()
-        self.output_dir = f"{output_dir}/{name}"
+        self.output_dir = f"{output_dir}/{self.name}"
 
     def save(self):
         self.__finish_training()
         result = {
-            "name": self.name,
             "training_start": str(self.training_start),
             "training_end": str(self.training_end),
             "training_duration (m)": self.training_duration.total_seconds()//60,

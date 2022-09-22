@@ -17,9 +17,7 @@ OUTPUT_DIR = "output"
 def main():
     read_config()
     tickers = os.listdir(DATA_DIR)
-    logger = TrainingLogger(name=CONFIG["experiment_name"], 
-                            config=CONFIG,
-                            tickers=tickers,
+    logger = TrainingLogger(config=CONFIG, tickers=tickers, 
                             output_dir=OUTPUT_DIR)
 
     data_reader = DataReader()
