@@ -58,6 +58,7 @@ class Agent:
 
             cur_state = self.X[c][t]
             prev_state = self.X[c][t-1]
+            next_state = self.X[c][t+1]
 
             if(self.randf(0, 1) <= self.epsilon):
                 prev_action = self.get_random_action(num_actions)
@@ -71,7 +72,6 @@ class Agent:
 
             L = self.y[c][t]  # Next day return
             reward = self.get_reward(prev_action, cur_action, L, self.penalty)
-            next_state = self.X[c][t+1]
             
             memory.remember(cur_state, cur_action, reward, next_state)
 
