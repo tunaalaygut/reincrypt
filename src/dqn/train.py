@@ -1,8 +1,11 @@
+import sys
+sys.path.append("../logging")
 import random
 import numpy as np
 from model import ViT 
 import tensorflow as tf
 from experince_replay import Memory
+from training_logger import TrainingLogger
 
 
 gpu_config = tf.compat.v1.ConfigProto()
@@ -12,19 +15,18 @@ gpu_config.gpu_options.per_process_gpu_memory_fraction = 0.5  # restrict to 50%
 
 
 class Agent:
-    def __init__(self, epsilon_init, epsilon_min, max_iterations, batch_size, B,
-                 C, penalty):
+    def __init__(self, config: dict):
         self.X = list()
         self.y = list()
 
-        self.epsilon = epsilon_init
-        self.epsilon_min = epsilon_min
+        self.epsilon = config["epsilon_init"]
+        self.epsilon_min = config["epsilon_min"]
 
-        self.max_iterations = max_iterations
-        self.batch_size = batch_size
-        self.penalty = penalty
-        self.B = B
-        self.C = C
+        self.max_iterations = config["max_iterations"]
+        self.batch_size = config["batch_size"]
+        self.penalty = config["penalty"]
+        self.B = config["B"]
+        self.C = config["C"]
 
     def set_data(self, X, y):
         self.X = X
@@ -33,27 +35,15 @@ class Agent:
         print(f'X: # Currencies = {len(self.X)}, # Days: {len(self.X[0])}')
         print(f'y: # Currencies = {len(self.y)}, # Days: {len(self.y[0])}')
 
-    def train(self, height, width, num_actions, memory_size, gamma,
-              learning_rate, patch_size, projection_dim, mlp_head_units, 
-              transformer_units, num_heads, transformer_layers, logger):
-        online_network = ViT(height=height, width=width, 
-                             num_actions=num_actions,
-                             learning_rate=learning_rate, patch_size=patch_size,
-                             projection_dim=projection_dim, 
-                             mlp_head_units=mlp_head_units, 
-                             transformer_units=transformer_units, 
-                             num_heads=num_heads, 
-                             transformer_layers=transformer_layers)
-        target_network = ViT(height=height, width=width, 
-                             num_actions=num_actions,
-                             learning_rate=learning_rate, patch_size=patch_size,
-                             projection_dim=projection_dim, 
-                             mlp_head_units=mlp_head_units, 
-                             transformer_units=transformer_units, 
-                             num_heads=num_heads, 
-                             transformer_layers=transformer_layers)
-
+    def train(self, config: dict, logger: TrainingLogger):
+        online_network = ViT(config)
+        target_network = ViT(config)
         target_network.model.set_weights(online_network.model.get_weights())
+
+        height, width = config["height"], config["width"]
+        num_actions = config["num_actions"]
+        memory_size = config["memory_size"]
+        gamma = config["gamma"]
 
         prev_state = np.empty((1, height, width), dtype=np.float64)
         prev_action = np.empty((num_actions), dtype=np.int64)

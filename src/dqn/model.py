@@ -37,19 +37,18 @@ class PatchEncoder(Layer):
         return encoded
 
 class ViT:
-    def __init__(self, height, width, num_actions, learning_rate, patch_size,
-                 projection_dim, mlp_head_units, transformer_units, num_heads,
-                 transformer_layers):
-        self.height = height
-        self.width = width
-        self.num_actions = num_actions
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-        self.patch_size = patch_size
-        self.projection_dim = projection_dim
-        self.mlp_head_units = mlp_head_units
-        self.transformer_units = transformer_units
-        self.num_heads = num_heads
-        self.transformer_layers = transformer_layers
+    def __init__(self, config: dict):
+        self.height = config["height"]
+        self.width = config["width"]
+        self.num_actions = config["num_actions"]
+        self.optimizer = tf.keras.optimizers.Adam(
+            learning_rate=config["learning_rate"])
+        self.patch_size = config["patch_size"]
+        self.projection_dim = config["projection_dim"]
+        self.mlp_head_units = config["mlp_head_units"]
+        self.transformer_units = config["transformer_units"]
+        self.num_heads = config["num_heads"]
+        self.transformer_layers = config["transformer_layers"]
         self.model = self.create_vit()
 
     def create_vit(self):

@@ -20,30 +20,14 @@ def main():
     logger = TrainingLogger(config=CONFIG, tickers=tickers, 
                             output_dir=OUTPUT_DIR)
 
-    data_reader = DataReader()
-
-    model = Agent(epsilon_init=CONFIG["epsilon_init"],
-                  epsilon_min=CONFIG["epsilon_min"], 
-                  max_iterations=CONFIG["max_iterations"], 
-                  batch_size=CONFIG["batch_size"], B=CONFIG["B"], C=CONFIG["C"], 
-                  penalty=CONFIG["penalty"])
+    agent = Agent(CONFIG)
 
     data_dirs = [os.path.join(DATA_DIR, curr_data) for curr_data in tickers]
- 
+    data_reader = DataReader()
     X, y = data_reader.read(data_dirs)
 
-    model.set_data(X, y)
-
-    model.train(height=CONFIG["height"], width=CONFIG["width"], 
-                num_actions=CONFIG["num_actions"], 
-                memory_size=CONFIG["memory_size"], gamma=CONFIG["gamma"], 
-                learning_rate=CONFIG["learning_rate"],
-                patch_size=CONFIG["patch_size"], 
-                projection_dim=CONFIG["projection_dim"], 
-                mlp_head_units=CONFIG["mlp_head_units"], 
-                transformer_units=CONFIG["transformer_units"], 
-                num_heads=CONFIG["num_heads"], 
-                transformer_layers=CONFIG["transformer_layers"], logger=logger)
+    agent.set_data(X, y)
+    agent.train(CONFIG, logger=logger)
 
     logger.save()
 
