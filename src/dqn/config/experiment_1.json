@@ -1,0 +1,30 @@
+{
+    "num_actions": 3,
+    "max_iterations": 50000,
+    "learning_rate": 0.001,
+    "epsilon_init": 1.0,
+    "epsilon_min": 0.1,
+    "width": 18,
+    "height": 18,
+    "memory_size": 1000,
+    "B": 10,
+    "C": 1000,
+    "gamma": 0.99,
+    "batch_size": 32,
+    "penalty": 0.05,
+    "patch_size": 3,
+    "projection_dim": 64,
+    "num_heads": 4,
+    "mlp_head_units": [
+        2048,
+        1024,
+        512,
+        64,
+        32
+    ],
+    "transformer_units": [
+        128,
+        64
+    ],
+    "transformer_layers": 8
+}
