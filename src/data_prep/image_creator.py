@@ -33,41 +33,26 @@ def main():
                                   vfactor=0.7)
                 tis[i][6] = ta.TRIMA(real=df.Close, timeperiod=interval)
                 tis[i][7] = ta.WMA(real=df.Close, timeperiod=interval)
-                tis[i][8] = ta.ADX(high=df.High, 
-                                low=df.Low,
-                                close=df.Close, 
+                tis[i][8] = ta.ADX(high=df.High, low=df.Low, close=df.Close, 
                                 timeperiod=interval)
-                tis[i][9] = ta.CCI(high=df.High, 
-                                low=df.Low, 
-                                close=df.Close, 
-                                timeperiod=interval)
+                tis[i][9] = ta.CCI(high=df.High, low=df.Low, close=df.Close, 
+                                   timeperiod=interval)
                 tis[i][10] = ta.CMO(real=df.Close, timeperiod=interval)
-                tis[i][11] = ta.DX(high=df.High, 
-                                low=df.Low, 
-                                close=df.Close, 
+                tis[i][11] = ta.DX(high=df.High, low=df.Low, close=df.Close, 
                                 timeperiod=interval)
                 tis[i][12] = ta.MOM(real=df.Close, timeperiod=interval)
-                tis[i][13] = ta.MFI(high=df.High, 
-                                    low=df.Low, 
-                                    close=df.Close, 
-                                    volume=df.Volume, 
-                                    timeperiod=interval)
+                tis[i][13] = ta.MFI(high=df.High, low=df.Low, close=df.Close, 
+                                    volume=df.Volume, timeperiod=interval)
                 tis[i][14] = ta.RSI(real=df.Close, timeperiod=interval)
                 #TODO: What are these timeperiods?
-                tis[i][15] = ta.ULTOSC(high=df.High, 
-                                    low=df.Low, 
-                                    close=df.Close, 
+                tis[i][15] = ta.ULTOSC(high=df.High, low=df.Low, close=df.Close, 
                                     timeperiod1=interval,
                                     timeperiod2=interval*2,
                                     timeperiod3=interval*4)
-                tis[i][16] = ta.WILLR(high=df.High, 
-                                    low=df.Low, 
-                                    close=df.Close, 
+                tis[i][16] = ta.WILLR(high=df.High, low=df.Low, close=df.Close, 
                                     timeperiod=interval)
-                tis[i][17] = ta.ATR(high=df.High,
-                                    low=df.Low, 
-                                    close=df.Close, 
-                                    timeperiod=interval)
+                tis[i][17] = ta.ATR(high=df.High, low=df.Low, close=df.Close, 
+                                    timeperiod=interval)                
                 
             images = np.zeros((len(df), 18, 18))
 
