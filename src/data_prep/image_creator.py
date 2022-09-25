@@ -1,5 +1,7 @@
+from fileinput import close
 import os
 import sys
+from tkinter.tix import IMAGE
 import talib as ta
 import pandas as pd
 import numpy as np
@@ -9,7 +11,8 @@ import io
 
 INPUT_DIR = sys.argv[1]
 OUTPUT_DIR = sys.argv[2]
-
+IMAGE_SIZE = 32
+INTERVAL_START = 7
 
 def main():
     print(f"Reading files from {INPUT_DIR}")
@@ -18,11 +21,11 @@ def main():
             df = pd.read_csv(os.path.join(INPUT_DIR, input_file))
             currency_symbol = input_file.split("_")[1].split(".")[0]
             print(f"\nTrying to create image data for {currency_symbol}.")
-            tis = np.zeros((18, 18, len(df)))
-            intervals = range(7, 25)
-
+            tis = np.zeros((IMAGE_SIZE, IMAGE_SIZE, len(df)))
+            intervals = range(INTERVAL_START, INTERVAL_START + IMAGE_SIZE)
+            
             for interval in intervals:
-                i = interval - 7
+                i = interval - intervals.start
                 tis[i][0] = ta.EMA(real=df.Close, timeperiod=interval)
                 tis[i][1] = ta.DEMA(real=df.Close, timeperiod=interval)
                 tis[i][2] = ta.KAMA(real=df.Close, timeperiod=interval)
@@ -34,12 +37,12 @@ def main():
                 tis[i][6] = ta.TRIMA(real=df.Close, timeperiod=interval)
                 tis[i][7] = ta.WMA(real=df.Close, timeperiod=interval)
                 tis[i][8] = ta.ADX(high=df.High, low=df.Low, close=df.Close, 
-                                timeperiod=interval)
+                                   timeperiod=interval)
                 tis[i][9] = ta.CCI(high=df.High, low=df.Low, close=df.Close, 
                                    timeperiod=interval)
                 tis[i][10] = ta.CMO(real=df.Close, timeperiod=interval)
                 tis[i][11] = ta.DX(high=df.High, low=df.Low, close=df.Close, 
-                                timeperiod=interval)
+                                   timeperiod=interval)
                 tis[i][12] = ta.MOM(real=df.Close, timeperiod=interval)
                 tis[i][13] = ta.MFI(high=df.High, low=df.Low, close=df.Close, 
                                     volume=df.Volume, timeperiod=interval)
@@ -52,9 +55,32 @@ def main():
                 tis[i][16] = ta.WILLR(high=df.High, low=df.Low, close=df.Close, 
                                     timeperiod=interval)
                 tis[i][17] = ta.ATR(high=df.High, low=df.Low, close=df.Close, 
-                                    timeperiod=interval)                
-                
-            images = np.zeros((len(df), 18, 18))
+                                    timeperiod=interval)    
+                tis[i][18] = ta.ADXR(high=df.High, low=df.Low, close=df.Close, 
+                                     timeperiod=interval)
+                tis[i][19] = ta.AROONOSC(high=df.High, low=df.Low, 
+                                      timeperiod=interval)
+                tis[i][20] = ta.ADOSC(high=df.High, low=df.Low, close=df.Close,
+                                      volume=df.Volume,
+                                      fastperiod=interval-4,
+                                      slowperiod=interval+3)
+                tis[i][21] = ta.STDDEV(real=df.Close, timeperiod=interval)
+                tis[i][22] = ta.MA(real=df.Close, timeperiod=interval)
+                tis[i][23] = ta.MIDPRICE(high=df.High, low=df.Low, 
+                                         timeperiod=interval)
+                tis[i][24] = ta.NATR(high=df.High, low=df.Low, close=df.Close, 
+                                     timeperiod=interval)
+                tis[i][25] = ta.PLUS_DI(high=df.High, low=df.Low, close=df.Close, 
+                                        timeperiod=interval)
+                tis[i][26] = ta.PLUS_DM(high=df.High, low=df.Low,
+                                        timeperiod=interval)
+                tis[i][27] = ta.ROC(real=df.Close, timeperiod=interval)
+                tis[i][28] = ta.TSF(real=df.Close, timeperiod=interval)
+                tis[i][29] = ta.VAR(real=df.Close, timeperiod=interval)
+                tis[i][30] = ta.LINEARREG(real=df.Close, timeperiod=interval)
+                tis[i][31] = ta.ROCP(real=df.Close, timeperiod=interval)
+
+            images = np.zeros((len(df), IMAGE_SIZE, IMAGE_SIZE))
 
             for day_idx in range(len(df)):
                 images[day_idx] = tis[:, :, day_idx]
