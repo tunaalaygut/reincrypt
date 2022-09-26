@@ -1,7 +1,7 @@
 import tensorflow as tf
 from keras.layers import (Layer, Dense, Flatten, Dropout, Embedding, Input,
-                          LayerNormalization, MultiHeadAttention, Add)
-from keras.models import Model
+                          LayerNormalization, MultiHeadAttention, Add, Resizing)
+from keras.models import Model, Sequential
 
 
 class Patches(Layer):
@@ -49,14 +49,23 @@ class ViT:
         self.transformer_units = config["transformer_units"]
         self.num_heads = config["num_heads"]
         self.transformer_layers = config["transformer_layers"]
+        self.resized_image_size = config["resized_image_size"]
+        self.enable_resizing = config["enable_resizing"]
         self.model = self.create_vit()
 
     def create_vit(self):
         inputs = Input(shape=(self.height, self.width, 1))
-        # Create patches. 
-        patches = Patches(self.patch_size)(inputs)
-        # Encode patches.
-        num_patches = (self.height // self.patch_size) ** 2
+        
+        if self.enable_resizing:        
+            augmented = Sequential([
+                Resizing(self.resized_image_size,
+                        self.resized_image_size)])(inputs)
+            patches = Patches(self.patch_size)(augmented)
+            num_patches = (self.resized_image_size // self.patch_size) ** 2
+        else:
+            patches = Patches(self.patch_size)(inputs)
+            num_patches = (self.height // self.patch_size) ** 2
+
         encoded_patches = PatchEncoder(num_patches, 
                                        self.projection_dim)(patches)
 

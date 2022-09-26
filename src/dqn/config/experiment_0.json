@@ -12,6 +12,8 @@
   "penalty": 0.05,
   "patch_size": 6,
   "projection_dim": 64,
+  "enable_resizing": false,
+  "resized_image_size": 36,
   "num_heads": 4,
   "mlp_head_units": [
     2048,
