@@ -28,9 +28,12 @@ class Agent:
         self.B = config["B"]
         self.C = config["C"]
 
-    def set_data(self, X, y):
+    def set_data(self, X, y, config: dict):
         self.X = X
         self.y = y
+        
+        config["height"] = self.X[0][0].shape[0]
+        config["width"] = self.X[0][0].shape[1]
 
         print(f'X: # Currencies = {len(self.X)}, # Days: {len(self.X[0])}')
         print(f'y: # Currencies = {len(self.y)}, # Days: {len(self.y[0])}')

@@ -7,26 +7,29 @@ sys.path.append("../logging")
 from training_logger import TrainingLogger
 
 
+# Command line arguments
 # TODO: Implement arg parser instead of this
 DATA_DIR = sys.argv[1]
 CONFIG_FILENAME = sys.argv[2]
+
+# Globals
+TICKERS = os.listdir(DATA_DIR)
+DATA_DIRS = [os.path.join(DATA_DIR, curr_data) for curr_data in TICKERS]
 CONFIG = dict()
 OUTPUT_DIR = "output"
 
 
 def main():
     read_config()
-    tickers = os.listdir(DATA_DIR)
-    logger = TrainingLogger(config=CONFIG, tickers=tickers, 
-                            output_dir=OUTPUT_DIR)
 
     agent = Agent(CONFIG)
-
-    data_dirs = [os.path.join(DATA_DIR, curr_data) for curr_data in tickers]
     data_reader = DataReader()
-    X, y = data_reader.read(data_dirs)
 
-    agent.set_data(X, y)
+    X, y = data_reader.read(DATA_DIRS)
+    agent.set_data(X, y, CONFIG)
+
+    logger = TrainingLogger(config=CONFIG, tickers=TICKERS, 
+                            output_dir=OUTPUT_DIR)
     agent.train(CONFIG, logger=logger)
 
     logger.save()
