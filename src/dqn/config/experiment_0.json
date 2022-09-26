@@ -1,6 +1,6 @@
 {
   "num_actions": 3,
-  "max_iterations": 5000,
+  "max_iterations": 50000,
   "learning_rate": 0.001,
   "epsilon_init": 1.0,
   "epsilon_min": 0.1,
