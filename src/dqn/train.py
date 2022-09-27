@@ -1,11 +1,11 @@
 import sys
-sys.path.append("../logging")
+sys.path.append("..")
 import random
 import numpy as np
 from model import ViT 
 import tensorflow as tf
 from experince_replay import Memory
-from training_logger import TrainingLogger
+from rlogging.training_logger import TrainingLogger
 
 
 gpu_config = tf.compat.v1.ConfigProto()

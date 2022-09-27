@@ -1,11 +1,10 @@
 import os
 import sys
-import json
+sys.path.append("..")
+from rlogging.training_logger import TrainingLogger
+from utility.util import read_config
 from data_reader import DataReader
 from train import Agent
-sys.path.append("../logging")
-from training_logger import TrainingLogger
-
 
 # Command line arguments
 # TODO: Implement arg parser instead of this
@@ -15,34 +14,23 @@ CONFIG_FILENAME = sys.argv[2]
 # Globals
 TICKERS = os.listdir(DATA_DIR)
 DATA_DIRS = [os.path.join(DATA_DIR, curr_data) for curr_data in TICKERS]
-CONFIG = dict()
 OUTPUT_DIR = "output"
 
 
 def main():
-    read_config()
+    config = read_config(config_filename=CONFIG_FILENAME, output_dir=OUTPUT_DIR)
 
-    agent = Agent(CONFIG)
+    agent = Agent(config)
     data_reader = DataReader()
 
     X, y = data_reader.read(DATA_DIRS)
-    agent.set_data(X, y, CONFIG)
+    agent.set_data(X, y, config)
 
-    logger = TrainingLogger(config=CONFIG, tickers=TICKERS, 
+    logger = TrainingLogger(config=config, tickers=TICKERS, 
                             output_dir=OUTPUT_DIR)
-    agent.train(CONFIG, logger=logger)
+    agent.train(config, logger=logger)
 
     logger.save()
-
-
-def read_config():
-    global CONFIG
-
-    with open(f"config/{CONFIG_FILENAME}.json", "r+") as f:
-        CONFIG = json.load(f)
-    CONFIG["experiment_name"] = CONFIG_FILENAME
-
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
 if __name__ == "__main__":
