@@ -1,109 +1,143 @@
+from fileinput import close
 import os
+import sys
+from tkinter.tix import IMAGE
 import talib as ta
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import minmax_scale
 import io
 
-#TODO: Make this parametric. Obviously...
-INPUT_FILE = "../../crypto_data/2908_BTC-USD.csv"
 
-df = pd.read_csv(INPUT_FILE)
-tis = np.zeros((18, 18, len(df)))
-intervals = range(7, 25)
+INPUT_DIR = sys.argv[1]
+OUTPUT_DIR = sys.argv[2]
+IMAGE_SIZE = 32
+INTERVAL_START = 7
 
 def main():
-    for interval in intervals:
-        i = interval - 7
-        tis[i][0] = ta.EMA(real=df.Close, timeperiod=interval)
-        tis[i][1] = ta.DEMA(real=df.Close, timeperiod=interval)
-        tis[i][2] = ta.KAMA(real=df.Close, timeperiod=interval)
-        tis[i][3] = ta.MIDPOINT(real=df.Close, timeperiod=interval)
-        tis[i][4] = ta.SMA(real=df.Close, timeperiod=interval)
-        #TODO: What is vfactor?
-        tis[i][5] = ta.T3(real=df.Close, timeperiod=interval, vfactor=0.7)
-        tis[i][6] = ta.TRIMA(real=df.Close, timeperiod=interval)
-        tis[i][7] = ta.WMA(real=df.Close, timeperiod=interval)
-        tis[i][8] = ta.ADX(high=df.High, 
-                        low=df.Low,
-                        close=df.Close, 
-                        timeperiod=interval)
-        tis[i][9] = ta.CCI(high=df.High, 
-                        low=df.Low, 
-                        close=df.Close, 
-                        timeperiod=interval)
-        tis[i][10] = ta.CMO(real=df.Close, timeperiod=interval)
-        tis[i][11] = ta.DX(high=df.High, 
-                        low=df.Low, 
-                        close=df.Close, 
-                        timeperiod=interval)
-        tis[i][12] = ta.MOM(real=df.Close, timeperiod=interval)
-        tis[i][13] = ta.MFI(high=df.High, 
-                            low=df.Low, 
-                            close=df.Close, 
-                            volume=df.Volume, 
-                            timeperiod=interval)
-        tis[i][14] = ta.RSI(real=df.Close, timeperiod=interval)
-        #TODO: What are these timeperiods?
-        tis[i][15] = ta.ULTOSC(high=df.High, 
-                            low=df.Low, 
-                            close=df.Close, 
-                            timeperiod1=interval,
-                            timeperiod2=interval*2,
-                            timeperiod3=interval*4)
-        tis[i][16] = ta.WILLR(high=df.High, 
-                            low=df.Low, 
-                            close=df.Close, 
-                            timeperiod=interval)
-        tis[i][17] = ta.ATR(high=df.High,
-                            low=df.Low, 
-                            close=df.Close, 
-                            timeperiod=interval)
-        
-    images = np.zeros((len(df), 18, 18))
+    print(f"Reading files from {INPUT_DIR}")
+    for input_file in os.listdir(INPUT_DIR):
+        try:
+            df = pd.read_csv(os.path.join(INPUT_DIR, input_file))
+            currency_symbol = input_file.split("_")[1].split(".")[0]
+            print(f"\nTrying to create image data for {currency_symbol}.")
+            tis = np.zeros((IMAGE_SIZE, IMAGE_SIZE, len(df)))
+            intervals = range(INTERVAL_START, INTERVAL_START + IMAGE_SIZE)
+            
+            for interval in intervals:
+                i = interval - intervals.start
+                tis[i][0] = ta.EMA(real=df.Close, timeperiod=interval)
+                tis[i][1] = ta.DEMA(real=df.Close, timeperiod=interval)
+                tis[i][2] = ta.KAMA(real=df.Close, timeperiod=interval)
+                tis[i][3] = ta.MIDPOINT(real=df.Close, timeperiod=interval)
+                tis[i][4] = ta.SMA(real=df.Close, timeperiod=interval)
+                #TODO: What is vfactor?
+                tis[i][5] = ta.T3(real=df.Close, timeperiod=interval, 
+                                  vfactor=0.7)
+                tis[i][6] = ta.TRIMA(real=df.Close, timeperiod=interval)
+                tis[i][7] = ta.WMA(real=df.Close, timeperiod=interval)
+                tis[i][8] = ta.ADX(high=df.High, low=df.Low, close=df.Close, 
+                                   timeperiod=interval)
+                tis[i][9] = ta.CCI(high=df.High, low=df.Low, close=df.Close, 
+                                   timeperiod=interval)
+                tis[i][10] = ta.CMO(real=df.Close, timeperiod=interval)
+                tis[i][11] = ta.DX(high=df.High, low=df.Low, close=df.Close, 
+                                   timeperiod=interval)
+                tis[i][12] = ta.MOM(real=df.Close, timeperiod=interval)
+                tis[i][13] = ta.MFI(high=df.High, low=df.Low, close=df.Close, 
+                                    volume=df.Volume, timeperiod=interval)
+                tis[i][14] = ta.RSI(real=df.Close, timeperiod=interval)
+                #TODO: What are these timeperiods?
+                tis[i][15] = ta.ULTOSC(high=df.High, low=df.Low, close=df.Close, 
+                                    timeperiod1=interval,
+                                    timeperiod2=interval*2,
+                                    timeperiod3=interval*4)
+                tis[i][16] = ta.WILLR(high=df.High, low=df.Low, close=df.Close, 
+                                    timeperiod=interval)
+                tis[i][17] = ta.ATR(high=df.High, low=df.Low, close=df.Close, 
+                                    timeperiod=interval)    
+                tis[i][18] = ta.ADXR(high=df.High, low=df.Low, close=df.Close, 
+                                     timeperiod=interval)
+                tis[i][19] = ta.AROONOSC(high=df.High, low=df.Low, 
+                                      timeperiod=interval)
+                tis[i][20] = ta.ADOSC(high=df.High, low=df.Low, close=df.Close,
+                                      volume=df.Volume,
+                                      fastperiod=interval-4,
+                                      slowperiod=interval+3)
+                tis[i][21] = ta.STDDEV(real=df.Close, timeperiod=interval)
+                tis[i][22] = ta.MA(real=df.Close, timeperiod=interval)
+                tis[i][23] = ta.MIDPRICE(high=df.High, low=df.Low, 
+                                         timeperiod=interval)
+                tis[i][24] = ta.NATR(high=df.High, low=df.Low, close=df.Close, 
+                                     timeperiod=interval)
+                tis[i][25] = ta.PLUS_DI(high=df.High, low=df.Low, close=df.Close, 
+                                        timeperiod=interval)
+                tis[i][26] = ta.PLUS_DM(high=df.High, low=df.Low,
+                                        timeperiod=interval)
+                tis[i][27] = ta.ROC(real=df.Close, timeperiod=interval)
+                tis[i][28] = ta.TSF(real=df.Close, timeperiod=interval)
+                tis[i][29] = ta.VAR(real=df.Close, timeperiod=interval)
+                tis[i][30] = ta.LINEARREG(real=df.Close, timeperiod=interval)
+                tis[i][31] = ta.ROCP(real=df.Close, timeperiod=interval)
 
-    for day_idx in range(len(df)):
-        images[day_idx] = tis[:, :, day_idx]
-        
-    images_new = images.copy()
+            images = np.zeros((len(df), IMAGE_SIZE, IMAGE_SIZE))
 
-    delete_idx = []
-    for idx in range(len(images_new)):
-        if np.isnan(images[idx]).any():
-            delete_idx.append(idx)
-    images_new = np.delete(images_new, delete_idx, axis=0)
+            for day_idx in range(len(df)):
+                images[day_idx] = tis[:, :, day_idx]
+                
+            images_new = images.copy()
 
-    scaled_images = []
-    # TODO: Consider column based scaling
-    for idx, im in enumerate(images_new):
-        scaled_im = minmax_scale(im.astype(int), (0,255))
-        scaled_images.append(scaled_im)
+            delete_idx = []
+            for idx in range(len(images_new)):
+                if np.isnan(images[idx]).any():
+                    delete_idx.append(idx)
+            images_new = np.delete(images_new, delete_idx, axis=0)
 
+            scalars = []
+            dates = []
+            for i in range(len(df)):
+                if i == len(df) - 1:
+                    delta = 0
+                else:
+                    delta = df.Close[i+1] - df.Close[i]
 
-    # TODO: what is this value referred to as in the paper?
-    gains = []
+                if df.Close[i] != 0:
+                    scalar = 100 * delta / df.Close[i]
+                elif df.Close[i] == 0 and df.Close[i+1] - df.Close[i] == 0:
+                    scalar = 0
+                else:
+                    scalar = 100
 
-    for i in range(len(df)):
-        if i == len(df) - 1:
-            delta = 0
-        else:
-            delta = df.Close[i] - df.Close[i+1]
-        gains.append(f'{str(100 * delta / df.Close[i])}\n')
+                scalars.append(f'{str(scalar)}\n')
+                dates.append(f"{str(df.Date[i])}")
 
-    for d in delete_idx:
-        del gains[d]
+            scalars = np.delete(np.array(scalars), delete_idx).tolist()
+            dates = np.delete(np.array(dates), delete_idx).tolist()
 
-    os.makedirs('output', exist_ok=True)
+            os.makedirs(os.path.join(OUTPUT_DIR, currency_symbol), 
+                        exist_ok=True)
 
-    for idx, (gain, scaled_image) in enumerate(zip(gains, scaled_images), 
-                                               start=0):
-        image_bytes = io.BytesIO()
-        np.savetxt(image_bytes, scaled_image, fmt="%03d")
-        mystr = image_bytes.getvalue().decode() + "$\n" + gain
-        image_bytes.close()
+            scaled_images = []
+            for idx, im in enumerate(images_new):
+                scaled_im = minmax_scale(im, (0,255)).astype(int)
+                scaled_images.append(scaled_im)
 
-        with open(f'output/image_{idx}.rimg', 'w+') as f:
-            f.write(mystr)
+            for idx, (scalar, image) in enumerate(zip(scalars, scaled_images),
+                                                  start=0):
+                image_bytes = io.BytesIO()
+                np.savetxt(image_bytes, image, fmt="%03d")
+                output_str = image_bytes.getvalue().decode() \
+                    + "$\n" + scalar \
+                    + "$\n" + dates[idx]
+                image_bytes.close()
+
+                with open(f'{OUTPUT_DIR}/{currency_symbol}/image_{idx}.rimg', 
+                        'w+') as f:
+                    f.write(output_str)
+            print(f"Image data for {currency_symbol} created successfully.\n")
+        except Exception as e:
+            print(f"Failed {currency_symbol}. {e}\n")
+            pass
 
 
 if __name__ == "__main__":

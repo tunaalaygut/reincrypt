@@ -2,3 +2,5 @@ yfinance
 TA-Lib
 scikit-learn
 tensorflow
+natsort
+matplotlib

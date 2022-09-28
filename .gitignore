@@ -1,3 +1,7 @@
 *.csv
 *.rimg
 __pycache__/
+env/
+experimental/
+.vscode/
+output/
