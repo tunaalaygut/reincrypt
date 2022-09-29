@@ -1,7 +1,7 @@
 import numpy as np
 from keras.models import load_model
-from keras import Model
 from model import ViT
+
 
 def test_market_neutralized_portfolio(model_path, config):
     network = ViT(config)
