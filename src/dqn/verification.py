@@ -5,7 +5,7 @@ from model import ViT
 
 def test_market_neutralized_portfolio(model_path, config, X, y):
     network = ViT(config)
-    network.model = load_model(model_path)
+    network.model = load_model(model_path, compile=False)
     outcome = __validate_neutralized_portfolio(network, X, y)
     print(outcome)  # This will be formatted
 
