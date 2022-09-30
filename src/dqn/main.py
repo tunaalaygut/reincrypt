@@ -1,5 +1,7 @@
 import os
 import sys
+
+from verification import test_market_neutralized_portfolio
 sys.path.append("..")
 from rlogging.training_logger import TrainingLogger
 from utility.util import read_config
@@ -10,6 +12,12 @@ from train import Agent
 # TODO: Implement arg parser instead of this
 DATA_DIR = sys.argv[1]
 CONFIG_FILENAME = sys.argv[2]
+MODEL_PATH = ""
+
+try:
+    MODEL_PATH = sys.argv[3]
+except IndexError as e:
+    pass
 
 # Globals
 TICKERS = os.listdir(DATA_DIR)
@@ -28,9 +36,11 @@ def main():
 
     logger = TrainingLogger(config=config, tickers=TICKERS, 
                             output_dir=OUTPUT_DIR)
-    agent.train(config, logger=logger)
-
-    logger.save()
+    if MODEL_PATH == "":
+        agent.train(config, logger=logger)
+        logger.save()
+    else:
+        test_market_neutralized_portfolio(MODEL_PATH, config, X, y)
 
 
 if __name__ == "__main__":

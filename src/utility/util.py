@@ -13,7 +13,7 @@ def str_to_ndarray(str: str) -> np.ndarray:
     return arr
 
 
-def read_config(config_filename: str, output_dir: str):
+def read_config(config_filename: str, output_dir="output"):
     config = {}
 
     with open(f"config/{config_filename}.json", "r+") as f:

@@ -3,10 +3,10 @@ from keras.models import load_model
 from model import ViT
 
 
-def test_market_neutralized_portfolio(model_path, config):
+def test_market_neutralized_portfolio(model_path, config, X, y):
     network = ViT(config)
     network.model = load_model(model_path)
-    outcome = __validate_neutralized_portfolio(network)
+    outcome = __validate_neutralized_portfolio(network, X, y)
     print(outcome)  # This will be formatted
 
 
@@ -73,3 +73,7 @@ def __get_neutralized_portfolio(actions, num_currencies):
         alpha[c] = np.round(alpha[c] / sum_alpha, 8)
 
     return alpha
+
+
+if __name__ == "__main__":
+    pass
