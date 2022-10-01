@@ -1,10 +1,12 @@
-from verification import test_market_neutralized_portfolio
-from data_reader import DataReader
-from train import Agent
-import argparse
-from rlogging.training_logger import TrainingLogger
-from utility.util import read_config
+import sys
+sys.path.append("..")
 import os
+from utility.util import read_config
+from rlogging.training_logger import TrainingLogger
+import argparse
+from train import Agent
+from data_reader import DataReader
+from verification import test_market_neutralized_portfolio
 
 
 # Parse command line arguments
