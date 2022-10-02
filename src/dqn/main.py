@@ -2,11 +2,11 @@ import sys
 sys.path.append("..")
 import os
 from utility.util import read_config
-from rlogging.training_logger import TrainingLogger
+from rlogging.training_logger import TrainingLogger, VerificationLogger
 import argparse
 from train import Agent
 from data_reader import DataReader
-from verification import test_market_neutralized_portfolio
+from verification import test_mnp
 
 
 # Parse command line arguments
@@ -37,20 +37,22 @@ OUTPUT_DIR = "output"
 def main():
     config = read_config(config_filename=CONFIG_FILENAME,
                          output_dir=OUTPUT_DIR)
-
-    agent = Agent(config)
     data_reader = DataReader()
-
-    X, y = data_reader.read(DATA_DIRS)
-    agent.set_data(X, y, config)
+    X, y = data_reader.read(DATA_DIRS, limit=20)
+    config["height"], config["width"] = X[0][0].shape[0], X[0][0].shape[1]
 
     if IS_TRAINING:
+        agent = Agent(config)
+        agent.set_data(X, y, config)
         logger = TrainingLogger(config=config, tickers=TICKERS,
                                 output_dir=OUTPUT_DIR)
         agent.train(config, logger=logger)
         logger.save()
     else:
-        test_market_neutralized_portfolio(MODEL_PATH, config, X, y)
+        logger = VerificationLogger(config=config, tickers=TICKERS,
+                                    output_dir=OUTPUT_DIR)
+        test_mnp(X, y, config, MODEL_PATH, logger)
+        logger.save()
 
 
 if __name__ == "__main__":
