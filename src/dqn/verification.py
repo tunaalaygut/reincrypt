@@ -3,11 +3,17 @@ from keras.models import load_model
 from model import ViT
 
 
-def test_market_neutralized_portfolio(model_path, config, X, y):
+def test_mnp(X, y, config, model_path, logger):
+    """
+    Test using market neutralized portfolio
+    """
     network = ViT(config)
     network.model = load_model(model_path, compile=False)
     outcome = __validate_neutralized_portfolio(network, X, y)
-    print(outcome)  # This will be formatted
+    
+    logger.num_currencies = outcome[0]
+    logger.position_change = outcome[1]
+    logger.cumulative_asset = outcome[2]
 
 
 def __validate_neutralized_portfolio(vit: ViT, X, y):
@@ -44,8 +50,6 @@ def __validate_neutralized_portfolio(vit: ViT, X, y):
         cumulative_asset = np.round(
             cumulative_asset
             + (cumulative_asset * avg_daily_return[t] * 0.01), 8)
-
-    print(f"Cumulative Asset: {cumulative_asset}")
 
     return num_currencies, position_change, cumulative_asset
 
