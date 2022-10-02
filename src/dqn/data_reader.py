@@ -24,7 +24,7 @@ class DataReader:
         print('numof all data: ', len(pathlist))
         return pathlist
 
-    def read(self, data_dirs: list) -> tuple:
+    def read(self, data_dirs: list, limit=None) -> tuple:
         X, y = [], []
 
         for data_dir in natsorted(data_dirs):
@@ -35,7 +35,9 @@ class DataReader:
                     X_part, y_part, _ = f.read().split("$")
                     X_sub.append(str_to_ndarray(X_part.strip()))
                     y_sub.append(float(y_part.strip()))
+                if(limit and len(X_sub) == limit): break
             X.append(X_sub)
             y.append(y_sub)
+            
 
         return X, y
