@@ -38,8 +38,10 @@ def main():
     config = read_config(config_filename=CONFIG_FILENAME,
                          output_dir=OUTPUT_DIR)
     data_reader = DataReader()
-    X, y = data_reader.read(DATA_DIRS, limit=20)
+    X, y = data_reader.read(DATA_DIRS)
     config["height"], config["width"] = X[0][0].shape[0], X[0][0].shape[1]
+
+    logger = None
 
     if IS_TRAINING:
         agent = Agent(config)
@@ -47,12 +49,11 @@ def main():
         logger = TrainingLogger(config=config, tickers=TICKERS,
                                 output_dir=OUTPUT_DIR)
         agent.train(config, logger=logger)
-        logger.save()
     else:
         logger = VerificationLogger(config=config, tickers=TICKERS,
                                     output_dir=OUTPUT_DIR)
         test_mnp(X, y, config, MODEL_PATH, logger)
-        logger.save()
+    logger.save()
 
 
 if __name__ == "__main__":
