@@ -19,6 +19,8 @@ parser.add_argument('-v', '--verification', action="store_true",
                     help="Whether to work in training or verification mode.")
 parser.add_argument("-m", "--model", required=False, type=str,
                     help="Path to pretrained model. Required if -v is set.")
+parser.add_argument("-dl", "--data-limit", required=False, type=int,
+                    help="Limit data being read to this number.")
 args = vars(parser.parse_args())
 
 # Globals
@@ -28,6 +30,7 @@ IS_TRAINING = not args["verification"]
 MODEL_PATH = args["model"] if args["verification"] else None
 if args["verification"] and args["model"] is None:
     parser.error("-v requires -m")
+DATA_LIMIT = args["data_limit"]
 
 TICKERS = os.listdir(DATA_DIR)
 DATA_DIRS = [os.path.join(DATA_DIR, curr_data) for curr_data in TICKERS]
@@ -38,7 +41,7 @@ def main():
     config = read_config(config_filename=CONFIG_FILENAME,
                          output_dir=OUTPUT_DIR)
     data_reader = DataReader()
-    X, y = data_reader.read(DATA_DIRS)
+    X, y = data_reader.read(DATA_DIRS, limit=DATA_LIMIT)
     populate_config(config, X)
 
     logger = None
