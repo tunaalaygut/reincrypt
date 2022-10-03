@@ -40,7 +40,8 @@ class TrainingLogger(ReincryptLogger):
             "training_duration (m)": self.duration.total_seconds()//60,
             "tickers": self.tickers,
             "config": self.config,
-            "losses": self.losses 
+            "losses": self.losses,
+            "num_days": self.config["num_days"] 
         }
 
         super(TrainingLogger, self).log_2_file(result=result, 
@@ -69,7 +70,8 @@ class VerificationLogger(ReincryptLogger):
             "results": {    
                 "num_currencies": self.num_currencies,
                 "position_change": self.position_change,
-                "cumulative_asset": self.cumulative_asset
+                "cumulative_asset": self.cumulative_asset,
+                "num_days": self.config["num_days"]
             }
         }
 

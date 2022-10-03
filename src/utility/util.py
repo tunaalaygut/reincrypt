@@ -23,3 +23,11 @@ def read_config(config_filename: str, output_dir="output"):
     os.makedirs(output_dir, exist_ok=True)
     
     return config
+
+def populate_config(config: dict, X):
+    """
+    Populate config with data specific details
+    """
+    config["height"] = X[0][0].shape[0]
+    config["width"] = X[0][0].shape[1]
+    config["num_days"] = len(X[0])

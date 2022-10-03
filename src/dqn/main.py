@@ -1,7 +1,7 @@
 import sys
 sys.path.append("..")
 import os
-from utility.util import read_config
+from utility.util import read_config, populate_config
 from rlogging.training_logger import TrainingLogger, VerificationLogger
 import argparse
 from train import Agent
@@ -39,7 +39,7 @@ def main():
                          output_dir=OUTPUT_DIR)
     data_reader = DataReader()
     X, y = data_reader.read(DATA_DIRS)
-    config["height"], config["width"] = X[0][0].shape[0], X[0][0].shape[1]
+    populate_config(config, X)
 
     logger = None
 
