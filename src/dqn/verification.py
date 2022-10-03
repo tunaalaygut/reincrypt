@@ -29,8 +29,7 @@ def __validate_neutralized_portfolio(vit: ViT, X, y):
     avg_daily_return = np.zeros(days)
 
     cumulative_asset = 1
-    
-    X = np.array(X)
+    X = np.array(X)  # Cast list to np array
 
     for t in range(days-1):
         _, cur_actions = vit.q_value(X[:, t], is_training=False)
