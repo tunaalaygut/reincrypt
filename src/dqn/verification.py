@@ -5,7 +5,7 @@ from model import ViT
 
 def test_mnp(X, y, config, model_path, logger):
     """
-    Test using market neutralized portfolio
+    Test using market neutralized portfolio (mnp)
     """
     network = ViT(config)
     network.model = load_model(model_path, compile=False)
@@ -29,12 +29,11 @@ def __validate_neutralized_portfolio(vit: ViT, X, y):
     avg_daily_return = np.zeros(days)
 
     cumulative_asset = 1
+    
+    X = np.array(X)
 
     for t in range(days-1):
-        for c in range(num_currencies):
-            cur_state = X[c][t]
-            _, eta = vit.q_value(cur_state, is_training=False)
-            cur_actions[c] = eta
+        _, cur_actions = vit.q_value(X[:, t], is_training=False)
 
         cur_alpha = __get_neutralized_portfolio(cur_actions, num_currencies)
 
