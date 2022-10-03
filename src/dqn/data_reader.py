@@ -38,6 +38,5 @@ class DataReader:
                 if(limit and len(X_sub) == limit): break
             X.append(X_sub)
             y.append(y_sub)
-            
 
         return X, y
