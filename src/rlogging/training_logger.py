@@ -29,6 +29,7 @@ class ReincryptLogger:
 class TrainingLogger(ReincryptLogger):
     def __init__(self, config:dict, tickers:list, output_dir: str):
         super(TrainingLogger, self).__init__(config, tickers, output_dir)
+        print("Training logging initialized.")
         self.losses = list()
 
     def save(self):
@@ -46,6 +47,7 @@ class TrainingLogger(ReincryptLogger):
 
         super(TrainingLogger, self).log_2_file(result=result, 
                                                file_prefix="training")
+        print("Training logging finalized.")
 
     def add_loss(self, loss):
         self.losses.append(loss)
@@ -54,6 +56,7 @@ class TrainingLogger(ReincryptLogger):
 class VerificationLogger(ReincryptLogger):
     def __init__(self, config:dict, tickers:list, output_dir: str):
         super(VerificationLogger, self).__init__(config, tickers, output_dir)
+        print("Verification logging initialized.")
         self.num_currencies = None
         self.position_change = None
         self.cumulative_asset = None
@@ -77,5 +80,4 @@ class VerificationLogger(ReincryptLogger):
 
         super(VerificationLogger, self).log_2_file(result=result,
                                                    file_prefix="verification")
-
-
+        print("Verification logging finalized.")

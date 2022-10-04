@@ -103,7 +103,6 @@ class Agent:
             if(b >= self.max_iterations):
                 online_network.model.save(
                     f"{logger.output_dir}/{logger.name}_model")
-                print('Training finished!')
                 return 0
 
     def get_random_action(self,  num_actions):
