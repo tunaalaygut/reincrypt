@@ -58,7 +58,9 @@ class VerificationLogger(ReincryptLogger):
         print("Verification logging initialized.")
         self.num_currencies = None
         self.position_change = None
-        self.cumulative_asset = None
+        self.final_cumulative_asset = None
+        self.cumulative_assets = []
+        self.avg_daily_returns = []
 
     def save(self):
         super(VerificationLogger, self).finish()
@@ -72,11 +74,31 @@ class VerificationLogger(ReincryptLogger):
             "results": {    
                 "num_currencies": self.num_currencies,
                 "position_change": self.position_change,
-                "cumulative_asset": self.cumulative_asset,
-                "num_days": self.config["num_days"]
+                "cumulative_asset": self.final_cumulative_asset,
+                "num_days": self.config["num_days"],
+                "daily_results": self.create_daily_results()
             }
         }
 
         super(VerificationLogger, self).log_2_file(result=result,
                                                    file_prefix="verification")
         print("Verification logging finalized.")
+
+    def add_daily_results(self, cumulative_asset, avg_daily_return):
+        self.cumulative_assets.append(cumulative_asset)
+        self.avg_daily_returns.append(avg_daily_return)
+
+    def create_daily_results(self) -> list:
+        daily_results = []
+
+        for day_idx, (cumulative_asset, avg_daily_return) \
+            in enumerate(zip(self.cumulative_assets, self.avg_daily_returns)):
+            daily_results.append(
+                {
+                    "day_index": day_idx,
+                    "cumulative_asset": cumulative_asset,
+                    "avg_daily_return": avg_daily_return
+                }
+            )
+
+        return daily_results

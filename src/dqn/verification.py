@@ -1,6 +1,9 @@
+import sys
+sys.path.append("..")
 import numpy as np
 from keras.models import load_model
 from model import ViT
+from rlogging.training_logger import VerificationLogger
 
 
 def test_mnp(X, y, config, model_path, logger):
@@ -9,14 +12,15 @@ def test_mnp(X, y, config, model_path, logger):
     """
     network = ViT(config)
     network.model = load_model(model_path, compile=False)
-    outcome = __validate_neutralized_portfolio(network, X, y)
+    outcome = __validate_neutralized_portfolio(network, X, y, logger)
     
     logger.num_currencies = outcome[0]
     logger.position_change = outcome[1]
     logger.cumulative_asset = outcome[2]
 
 
-def __validate_neutralized_portfolio(vit: ViT, X, y):
+def __validate_neutralized_portfolio(vit: ViT, X, y, 
+                                     logger: VerificationLogger):
     num_currencies = len(X)
     days = len(X[0])
     cur_actions = np.zeros((num_currencies, 3))
@@ -31,7 +35,7 @@ def __validate_neutralized_portfolio(vit: ViT, X, y):
     cumulative_asset = 1
     X = np.array(X)  # Cast list to np array
 
-    for t in range(days-1):
+    for t in range(days):
         _, cur_actions = vit.q_value(X[:, t], is_training=False)
 
         cur_alpha = __get_neutralized_portfolio(cur_actions, num_currencies)
@@ -44,7 +48,7 @@ def __validate_neutralized_portfolio(vit: ViT, X, y):
                                        + abs(cur_alpha[c] - prev_alpha[c]), 8)
             prev_alpha[c] = cur_alpha[c]
 
-    for t in range(days):
+        logger.add_daily_results(cumulative_asset, avg_daily_return[t])
         cumulative_asset = np.round(
             cumulative_asset
             + (cumulative_asset * avg_daily_return[t] * 0.01), 8)
