@@ -41,7 +41,7 @@ def main():
     config = read_config(config_filename=CONFIG_FILENAME,
                          output_dir=OUTPUT_DIR)
     data_reader = DataReader()
-    X, y = data_reader.read(DATA_DIRS, limit=DATA_LIMIT)
+    X, y, date_begin, date_end = data_reader.read(DATA_DIRS, limit=DATA_LIMIT)
     populate_config(config, X)
 
     logger = None
@@ -56,6 +56,8 @@ def main():
         logger = VerificationLogger(config=config, tickers=TICKERS,
                                     output_dir=OUTPUT_DIR)
         test_mnp(X, y, config, MODEL_PATH, logger)
+
+    logger.set_dates(date_begin, date_end)
     logger.save()
 
 

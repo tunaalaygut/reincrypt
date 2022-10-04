@@ -12,6 +12,8 @@ class ReincryptLogger:
         self.tickers = tickers
         self.config = config
         self.output_dir = f"{output_dir}/{self.name}"
+        self.date_begin = None
+        self.date_end = None
 
     def finish(self):
         self.end = datetime.now()
@@ -23,6 +25,10 @@ class ReincryptLogger:
         with open(
             f"{self.output_dir}/{file_prefix}_{timestamp}.json", "w+") as js:
             json.dump(result, js, indent=2)
+            
+    def set_dates(self, date_begin=None, date_end=None):
+        self.date_begin = date_begin
+        self.date_end = date_end
 
 
 class TrainingLogger(ReincryptLogger):
@@ -41,7 +47,9 @@ class TrainingLogger(ReincryptLogger):
             "tickers": self.tickers,
             "config": self.config,
             "losses": self.losses,
-            "num_days": self.config["num_days"] 
+            "num_days": self.config["num_days"],
+            "date_begin": self.date_begin,
+            "date_end": self.date_end 
         }
 
         super(TrainingLogger, self).log_2_file(result=result, 
@@ -76,6 +84,8 @@ class VerificationLogger(ReincryptLogger):
                 "position_change": self.position_change,
                 "cumulative_asset": self.final_cumulative_asset,
                 "num_days": self.config["num_days"],
+                "date_begin": self.date_begin,
+                "date_end": self.date_end,
                 "daily_results": self.create_daily_results()
             }
         }

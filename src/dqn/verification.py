@@ -16,7 +16,7 @@ def test_mnp(X, y, config, model_path, logger):
     
     logger.num_currencies = outcome[0]
     logger.position_change = outcome[1]
-    logger.cumulative_asset = outcome[2]
+    logger.final_cumulative_asset = outcome[2]
 
 
 def __validate_neutralized_portfolio(vit: ViT, X, y, 

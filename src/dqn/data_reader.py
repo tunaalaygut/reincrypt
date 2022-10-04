@@ -26,6 +26,16 @@ class DataReader:
 
     def read(self, data_dirs: list, limit=None) -> tuple:
         X, y = [], []
+        
+        date_begin, date_end = None, None
+        first_file = natsorted(os.listdir(data_dirs[0]))[0]
+        last_file = natsorted(
+            os.listdir(data_dirs[0]))[limit -1 if limit else -1]
+
+        with open(os.path.join(data_dirs[0], first_file), "r+") as f:
+            date_begin = f.read().split("$")[-1].strip()
+        with open(os.path.join(data_dirs[0], last_file), "r+") as f:
+            date_end = f.read().split("$")[-1].strip()
 
         for data_dir in natsorted(data_dirs):
             X_sub, y_sub = [], []
@@ -39,4 +49,4 @@ class DataReader:
             X.append(X_sub)
             y.append(y_sub)
 
-        return X, y
+        return X, y, date_begin, date_end
