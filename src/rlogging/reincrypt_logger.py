@@ -1,6 +1,7 @@
 import os
 import sys
 sys.path.append("..")
+from utility.plotter import plot_daily
 import json
 from datetime import datetime
 from utility.util import get_sharpe_ratio
@@ -22,11 +23,14 @@ class ReincryptLogger:
         self.end = datetime.now()
         self.duration = self.end - self.start
         
-    def log_2_file(self, result, file_prefix):
+    def log_2_file(self, result, file_prefix, file_suffix=None):
         os.makedirs(f"{self.output_dir}", exist_ok=True)
-        timestamp = int(self.start.timestamp())
+
+        if not file_suffix:
+            file_suffix = int(self.start.timestamp())
+
         with open(
-            f"{self.output_dir}/{file_prefix}_{timestamp}.json", "w+") as js:
+            f"{self.output_dir}/{file_prefix}_{file_suffix}.json", "w+") as js:
             json.dump(result, js, indent=2)
             
     def set_dates(self, date_begin=None, date_end=None):
@@ -94,6 +98,9 @@ class VerificationLogger(ReincryptLogger):
             }
         }
 
+        #TODO: Calculate suffix here and pass it to both plot and result JSON
+        plot_daily(self.avg_daily_returns, date_begin=self.date_begin, 
+                           date_end=self.date_end)
         super(VerificationLogger, self).log_2_file(result=result,
                                                    file_prefix="verification")
         print("Verification logging finalized.")
