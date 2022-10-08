@@ -1,6 +1,9 @@
 import os
+import sys
+sys.path.append("..")
 import json
 from datetime import datetime
+from utility.util import get_sharpe_ratio
 
 
 class ReincryptLogger:
@@ -83,6 +86,7 @@ class VerificationLogger(ReincryptLogger):
                 "num_currencies": self.num_currencies,
                 "position_change": self.position_change,
                 "cumulative_asset": self.final_cumulative_asset,
+                "sharpe_ratio": get_sharpe_ratio(self.avg_daily_returns),
                 "num_days": self.config["num_days"],
                 "date_begin": self.date_begin,
                 "date_end": self.date_end,
