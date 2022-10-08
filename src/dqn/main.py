@@ -2,7 +2,7 @@ import sys
 sys.path.append("..")
 import os
 from utility.util import read_config, populate_config
-from rlogging.training_logger import TrainingLogger, VerificationLogger
+from rlogging.reincrypt_logger import TrainingLogger, VerificationLogger
 import argparse
 from train import Agent
 from data_reader import DataReader

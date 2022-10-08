@@ -3,7 +3,7 @@ sys.path.append("..")
 import numpy as np
 from keras.models import load_model
 from model import ViT
-from rlogging.training_logger import VerificationLogger
+from rlogging.reincrypt_logger import VerificationLogger
 
 
 def test_mnp(X, y, config, model_path, logger):
