@@ -30,11 +30,13 @@ def main():
                 tis[i][2] = ta.KAMA(real=df.Close, timeperiod=interval)  
                 tis[i][3] = ta.MIDPOINT(real=df.Close, timeperiod=interval)  
                 tis[i][4] = ta.SMA(real=df.Close, timeperiod=interval)  
-                tis[i][5] = ta.T3(real=df.Close, timeperiod=interval, vfactor=0.7)  
+                tis[i][5] = ta.T3(real=df.Close, timeperiod=interval, 
+                                  vfactor=0.7)  
                 tis[i][6] = ta.TRIMA(real=df.Close, timeperiod=interval)  
                 tis[i][7] = ta.WMA(real=df.Close, timeperiod=interval)  
                 tis[i][8] = ta.MA(real=df.Close, timeperiod=interval)  
-                tis[i][9] = ta.MIDPRICE(high=df.High, low=df.Low, timeperiod=interval)  
+                tis[i][9] = ta.MIDPRICE(high=df.High, low=df.Low, 
+                                        timeperiod=interval)  
                 # Momentum Indicators
                 tis[i][10] = ta.ADX(high=df.High, low=df.Low, close=df.Close, 
                                     timeperiod=interval)
@@ -48,7 +50,8 @@ def main():
                                     volume=df.Volume, timeperiod=interval)
                 tis[i][16] = ta.RSI(real=df.Close, timeperiod=interval)
                 tis[i][17] = ta.ULTOSC(high=df.High, low=df.Low, close=df.Close, 
-                                       timeperiod1=interval, timeperiod2=interval*2,
+                                       timeperiod1=interval, 
+                                       timeperiod2=interval*2,
                                        timeperiod3=interval*4)
                 tis[i][18] = ta.WILLR(high=df.High, low=df.Low, close=df.Close, 
                                       timeperiod=interval)
@@ -56,8 +59,8 @@ def main():
                                      timeperiod=interval)
                 tis[i][20] = ta.AROONOSC(high=df.High, low=df.Low,
                                          timeperiod=interval)
-                tis[i][21] = ta.PLUS_DI(high=df.High, low=df.Low, close=df.Close, 
-                                        timeperiod=interval)
+                tis[i][21] = ta.PLUS_DI(high=df.High, low=df.Low, 
+                                        close=df.Close, timeperiod=interval)
                 tis[i][22] = ta.PLUS_DM(high=df.High, low=df.Low,
                                         timeperiod=interval)
                 tis[i][23] = ta.ROC(real=df.Close, timeperiod=interval)
