@@ -5,3 +5,12 @@ env/
 experimental/
 .vscode/
 output/
+data/
+writing/*/*.aux
+writing/*/*.bbl
+writing/*/*.blg
+writing/*/*.fdb_latexmk
+writing/*/*.fls
+writing/*/*.log
+writing/*/*.synctex.gz
+writing/*/*.pdf

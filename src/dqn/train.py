@@ -5,7 +5,7 @@ import numpy as np
 from model import ViT 
 import tensorflow as tf
 from experince_replay import Memory
-from rlogging.training_logger import TrainingLogger
+from rlogging.reincrypt_logger import TrainingLogger
 
 
 gpu_config = tf.compat.v1.ConfigProto()
@@ -31,9 +31,6 @@ class Agent:
     def set_data(self, X, y, config: dict):
         self.X = X
         self.y = y
-        
-        config["height"] = self.X[0][0].shape[0]
-        config["width"] = self.X[0][0].shape[1]
 
         print(f'X: # Currencies = {len(self.X)}, # Days: {len(self.X[0])}')
         print(f'y: # Currencies = {len(self.y)}, # Days: {len(self.y[0])}')
@@ -106,7 +103,6 @@ class Agent:
             if(b >= self.max_iterations):
                 online_network.model.save(
                     f"{logger.output_dir}/{logger.name}_model")
-                print('Training finished!')
                 return 0
 
     def get_random_action(self,  num_actions):

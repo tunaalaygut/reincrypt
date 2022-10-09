@@ -1,7 +1,7 @@
 {
   "num_actions": 3,
   "max_iterations": 50000,
-  "learning_rate": 0.001,
+  "learning_rate": 0.0001,
   "epsilon_init": 1.0,
   "epsilon_min": 0.1,
   "memory_size": 1000,
@@ -17,10 +17,7 @@
   "num_heads": 4,
   "mlp_head_units": [
     2048,
-    1024,
-    512,
-    64,
-    32
+    1024
   ],
   "transformer_units": [
     128,

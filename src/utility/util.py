@@ -13,7 +13,7 @@ def str_to_ndarray(str: str) -> np.ndarray:
     return arr
 
 
-def read_config(config_filename: str, output_dir: str):
+def read_config(config_filename: str, output_dir="output"):
     config = {}
 
     with open(f"config/{config_filename}.json", "r+") as f:
@@ -23,3 +23,28 @@ def read_config(config_filename: str, output_dir: str):
     os.makedirs(output_dir, exist_ok=True)
     
     return config
+
+def populate_config(config: dict, X):
+    """
+    Populate config with data specific details
+    """
+    config["height"] = X[0][0].shape[0]
+    config["width"] = X[0][0].shape[1]
+    config["num_days"] = len(X[0])
+
+
+def get_sharpe_ratio(daily_returns: list, factor=np.sqrt(252)) -> float:
+    """ Given a list of daily returns, returns sharpe ratio
+
+    Args:
+        daily_returns (list): Daily returns
+        factor (_type_, optional): Factor to annualize daily returns. There are
+            252 trading days in a year. Defaults to np.sqrt(252).
+
+    Returns:
+        float: Sharpe ratio
+    """
+    mean_daily_returns = np.mean(daily_returns)
+    std_daily_returns = np.std(daily_returns)
+
+    return mean_daily_returns/std_daily_returns * factor
