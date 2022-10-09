@@ -17,4 +17,5 @@ def plot_daily(daily_returns: list, date_begin: str, date_end: str, title: str,
     plt.xticks(rotation=90)  # To rotate dates
     plt.ylabel(y_label)
     plt.grid(True)
-    plt.savefig(fname=f"{output_dir}/{output_fname}_{file_suffix}.{extension}")
+    plt.savefig(fname=f"{output_dir}/{output_fname}_{file_suffix}.{extension}",
+                bbox_inches="tight")
