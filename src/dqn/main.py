@@ -21,6 +21,8 @@ parser.add_argument("-m", "--model", required=False, type=str,
                     help="Path to pretrained model. Required if -v is set.")
 parser.add_argument("-dl", "--data-limit", required=False, type=int,
                     help="Limit data being read to this number.")
+parser.add_argument("-k", "--topbottomk", required=False, type=float,
+                    help="K for top/bottom K portfolio")
 args = vars(parser.parse_args())
 
 # Globals
@@ -35,6 +37,7 @@ DATA_LIMIT = args["data_limit"]
 TICKERS = os.listdir(DATA_DIR)
 DATA_DIRS = [os.path.join(DATA_DIR, curr_data) for curr_data in TICKERS]
 OUTPUT_DIR = "output"
+K = args["topbottomk"]
 
 
 def main():
@@ -55,9 +58,10 @@ def main():
     else:
         logger = VerificationLogger(config=config, tickers=TICKERS,
                                     output_dir=OUTPUT_DIR)
-        # TODO: Make type of portfolio to run parametric
-        test_tbk(X, y, 0.2, config, MODEL_PATH, logger)
-        # test_mnp(X, y, config, MODEL_PATH, logger)
+        if K:
+            test_tbk(X, y, K, config, MODEL_PATH, logger)
+        else:
+            test_mnp(X, y, config, MODEL_PATH, logger)
 
     logger.set_dates(date_begin, date_end)
     logger.save()
