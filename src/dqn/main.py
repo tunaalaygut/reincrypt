@@ -6,7 +6,7 @@ from rlogging.reincrypt_logger import TrainingLogger, VerificationLogger
 import argparse
 from train import Agent
 from data_reader import DataReader
-from verification import test_mnp
+from verification import test_mnp, test_tbk
 
 
 # Parse command line arguments
@@ -55,7 +55,9 @@ def main():
     else:
         logger = VerificationLogger(config=config, tickers=TICKERS,
                                     output_dir=OUTPUT_DIR)
-        test_mnp(X, y, config, MODEL_PATH, logger)
+        # TODO: Make type of portfolio to run parametric
+        test_tbk(X, y, 0.2, config, MODEL_PATH, logger)
+        # test_mnp(X, y, config, MODEL_PATH, logger)
 
     logger.set_dates(date_begin, date_end)
     logger.save()

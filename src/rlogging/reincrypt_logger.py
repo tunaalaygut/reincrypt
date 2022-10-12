@@ -98,7 +98,6 @@ class VerificationLogger(ReincryptLogger):
             }
         }
 
-        #TODO: Calculate suffix here and pass it to both plot and result JSON
         file_suffix = int(self.start.timestamp())
         plot_daily(self.cumulative_assets, date_begin=self.date_begin, 
                    date_end=self.date_end, title="Daily Cumulative Assets", 
