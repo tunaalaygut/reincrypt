@@ -6,25 +6,18 @@ import sys
 sys.path.append("..")
 
 
-def test_mnp(X, y, config, model_path, logger):
+def test_portfolio(X, y, config, model_path, logger, K=None):
     """
-    Test using market neutralized portfolio (mnp)
-    """
-    network = ViT(config)
-    network.model = load_model(model_path, compile=False)
-    outcome = __validate_neutralized_portfolio(network, X, y, logger)
-
-    logger.position_change = outcome[0]
-    logger.final_cumulative_asset = outcome[1]
-
-
-def test_tbk(X, y, K, config, model_path, logger):
-    """
-    Test using market top/bottom k portfolio (tbk)
+    Test using top/bottom k portfolio or market neutral portfolio 
     """
     network = ViT(config)
     network.model = load_model(model_path, compile=False)
-    outcome = __validate_top_bottom_k_portfolio(network, X, y, K, logger)
+    outcome = None
+
+    if K:
+        outcome = __validate_top_bottom_k_portfolio(network, X, y, K, logger)
+    else:
+        outcome = __validate_neutralized_portfolio(network, X, y, logger)
 
     logger.position_change = outcome[0]
     logger.final_cumulative_asset = outcome[1]

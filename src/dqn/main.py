@@ -6,7 +6,7 @@ from rlogging.reincrypt_logger import TrainingLogger, VerificationLogger
 import argparse
 from train import Agent
 from data_reader import DataReader
-from verification import test_mnp, test_tbk
+from verification import test_portfolio
 
 
 # Parse command line arguments
@@ -58,10 +58,7 @@ def main():
     else:
         logger = VerificationLogger(config=config, tickers=TICKERS,
                                     output_dir=OUTPUT_DIR)
-        if K:
-            test_tbk(X, y, K, config, MODEL_PATH, logger)
-        else:
-            test_mnp(X, y, config, MODEL_PATH, logger)
+        test_portfolio(X, y, config, MODEL_PATH, logger, K)
 
     logger.set_dates(date_begin, date_end)
     logger.save()
