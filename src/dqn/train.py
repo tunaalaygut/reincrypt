@@ -77,7 +77,6 @@ class Agent:
             
             memory.remember(cur_state, cur_action, reward, next_state)
 
-            # TODO: Should we make epsilon get smaller faster?
             if(self.epsilon > self.epsilon_min):
                 self.epsilon = self.epsilon * 0.999999
 
