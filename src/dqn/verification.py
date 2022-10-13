@@ -14,9 +14,8 @@ def test_mnp(X, y, config, model_path, logger):
     network.model = load_model(model_path, compile=False)
     outcome = __validate_neutralized_portfolio(network, X, y, logger)
 
-    logger.num_currencies = outcome[0]
-    logger.position_change = outcome[1]
-    logger.final_cumulative_asset = outcome[2]
+    logger.position_change = outcome[0]
+    logger.final_cumulative_asset = outcome[1]
 
 
 def test_tbk(X, y, K, config, model_path, logger):
@@ -27,9 +26,8 @@ def test_tbk(X, y, K, config, model_path, logger):
     network.model = load_model(model_path, compile=False)
     outcome = __validate_top_bottom_k_portfolio(network, X, y, K, logger)
 
-    logger.num_currencies = outcome[0]
-    logger.position_change = outcome[1]
-    logger.final_cumulative_asset = outcome[2]
+    logger.position_change = outcome[0]
+    logger.final_cumulative_asset = outcome[1]
 
 
 def __validate_top_bottom_k_portfolio(vit: ViT, X, y, K: float,
@@ -46,7 +44,6 @@ def __validate_top_bottom_k_portfolio(vit: ViT, X, y, K: float,
 
     cumulative_asset = 1
 
-    # TODO: Make num actions parametric
     cur_action_value = np.zeros((num_currencies, 3))
     long_signals = np.zeros(num_currencies)
 
@@ -59,7 +56,6 @@ def __validate_top_bottom_k_portfolio(vit: ViT, X, y, K: float,
         cur_action_value, _ = vit.q_value(X[:, t], is_training=False)
         long_signals = cur_action_value[:, 0] - cur_action_value[:, 2]
 
-        # TODO: Make K (0.2 in this case) parametric
         upper_threshold, lower_threshold = __get_kth(long_signals, K)
         cur_alpha = __get_top_bottom_portfolio(upper_threshold, lower_threshold,
                                                long_signals, num_currencies)
@@ -75,7 +71,7 @@ def __validate_top_bottom_k_portfolio(vit: ViT, X, y, K: float,
             round(cumulative_asset
                   + (cumulative_asset * avg_daily_ret[t] * 0.01), 8)
 
-    return num_currencies, pos_change, cumulative_asset
+    return pos_change, cumulative_asset
 
 
 def __get_top_bottom_portfolio(upper_threshold, lower_threshold, long_signals,
@@ -143,8 +139,8 @@ def __validate_neutralized_portfolio(vit: ViT, X, y,
         cumulative_asset = np.round(
             cumulative_asset
             + (cumulative_asset * avg_daily_return[t] * 0.01), 8)
-    # TODO: Why return currencies?
-    return num_currencies, position_change, cumulative_asset
+
+    return position_change, cumulative_asset
 
 
 def __get_neutralized_portfolio(actions, num_currencies):

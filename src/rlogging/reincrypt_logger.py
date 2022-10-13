@@ -71,7 +71,6 @@ class VerificationLogger(ReincryptLogger):
     def __init__(self, config:dict, tickers:list, output_dir: str):
         super(VerificationLogger, self).__init__(config, tickers, output_dir)
         print("Verification logging initialized.")
-        self.num_currencies = None
         self.position_change = None
         self.final_cumulative_asset = None
         self.cumulative_assets = []
@@ -85,9 +84,9 @@ class VerificationLogger(ReincryptLogger):
             "verification_end": str(self.end),
             "verification_duration (m)": self.duration.total_seconds()//60,
             "verification_tickers": self.tickers,
+            "num_tickers": len(self.tickers),
             "config": self.config,
             "results": {    
-                "num_currencies": self.num_currencies,
                 "position_change": self.position_change,
                 "cumulative_asset": self.final_cumulative_asset,
                 "sharpe_ratio": get_sharpe_ratio(self.avg_daily_returns),
