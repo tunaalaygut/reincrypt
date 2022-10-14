@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime
 
 
-def plot_daily(daily_returns: list, date_begin: str, date_end: str, title: str,
+def plot_daily(daily_data: list, date_begin: str, date_end: str, title: str,
                y_label: str, output_dir: str, output_fname: str, 
                file_suffix: int, color: str, extension="png"):
     # Create x and y data
@@ -11,7 +11,7 @@ def plot_daily(daily_returns: list, date_begin: str, date_end: str, title: str,
     date_end = datetime.strptime(date_end, "%Y-%m-%d").date()
     days = pd.date_range(date_begin, date_end, freq='d')
     
-    plt.plot(days, daily_returns, color=color)
+    plt.plot(days, daily_data, color=color)
     plt.title(title)
     plt.xlabel('Date')
     plt.xticks(rotation=90)  # To rotate dates
