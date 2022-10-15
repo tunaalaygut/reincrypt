@@ -1,3 +1,4 @@
+from cProfile import label
 import matplotlib.pyplot as plt
 import pandas as pd
 from datetime import datetime
@@ -5,17 +6,33 @@ from datetime import datetime
 
 def plot_daily(daily_data: list, date_begin: str, date_end: str, title: str,
                y_label: str, output_dir: str, output_fname: str, 
-               file_suffix: int, color: str, extension="png"):
+               file_suffix: int, color: str, extension="png", 
+               mark_anomalies=False, figsize=(10, 6), dpi=600):
     # Create x and y data
     date_begin = datetime.strptime(date_begin, "%Y-%m-%d").date()
     date_end = datetime.strptime(date_end, "%Y-%m-%d").date()
     days = pd.date_range(date_begin, date_end, freq='d')
     
-    plt.plot(days, daily_data, color=color)
+    _, ax = plt.subplots(figsize=figsize, dpi=dpi)
+    ax.plot(days, daily_data, color=color, label=y_label)
+
+    if mark_anomalies:
+        from sklearn.ensemble import IsolationForest
+
+        df = pd.DataFrame(columns=['daily_data', 'is_anomaly', 'date'])
+        df.daily_data = daily_data
+        df.date = days
+        data = df.daily_data.values.reshape((-1, 1))
+        clf = IsolationForest().fit(data)
+        df.is_anomaly = clf.predict(data)
+        anomaly_df = df[df['is_anomaly'] == -1] 
+        ax.scatter(anomaly_df.date, anomaly_df['daily_data'], color='red',
+                   label='Anomaly', s=3)
     plt.title(title)
     plt.xlabel('Date')
     plt.xticks(rotation=90)  # To rotate dates
     plt.ylabel(y_label)
     plt.grid(True)
+    plt.legend()
     plt.savefig(fname=f"{output_dir}/{output_fname}_{file_suffix}.{extension}",
                 bbox_inches="tight")

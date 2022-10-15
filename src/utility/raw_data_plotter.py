@@ -11,11 +11,13 @@ CURRENCY = os.path.basename(RAW_DATA_PATH).split("_")[1].split(".")[0]
 
 def main():
     df = pd.read_csv(RAW_DATA_PATH)
+    df = df[(df.Date < "2019-01-01") & (df.Date >= "2018-01-01")]
     plot_daily(daily_data=df[FEATURE], date_begin=df.Date.values[0],
                date_end=df.Date.values[-1],
                title=f"{FEATURE} by Date for {CURRENCY}", y_label=FEATURE,
                output_dir=".", output_fname=f"{CURRENCY}_raw_data_{FEATURE}",
-               file_suffix=int(datetime.now().timestamp()), color="green")
+               file_suffix=int(datetime.now().timestamp()), color="green",
+               mark_anomalies=True)
 
 
 if __name__ == "__main__":
