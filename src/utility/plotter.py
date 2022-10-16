@@ -22,8 +22,7 @@ def plot_daily(daily_data: list, date_begin: str, date_end: str, title: str,
         df.daily_data = daily_data
         df.date = days
         data = df.daily_data.values.reshape((-1, 1))
-        clf = IsolationForest().fit(data)
-        df.is_anomaly = clf.predict(data)
+        df.is_anomaly = IsolationForest().fit_predict(data)
         anomaly_df = df[df['is_anomaly'] == -1] 
         ax.scatter(anomaly_df.date, anomaly_df['daily_data'], color='red',
                    label='Anomaly', s=3)
