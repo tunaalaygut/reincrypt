@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 from datetime import datetime
+from util import get_anomalies
+
 
 
 def plot_daily(daily_data: list, date_begin: str, date_end: str, title: str,
@@ -16,14 +18,11 @@ def plot_daily(daily_data: list, date_begin: str, date_end: str, title: str,
     ax.plot(days, daily_data, color=color, label=y_label)
 
     if mark_anomalies:
-        from sklearn.ensemble import IsolationForest
-
         df = pd.DataFrame(columns=['daily_data', 'is_anomaly', 'date'])
         df.daily_data = daily_data
         df.date = days
-        data = df.daily_data.values.reshape((-1, 1))
-        df.is_anomaly = IsolationForest().fit_predict(data)
-        anomaly_df = df[df['is_anomaly'] == -1] 
+        df = get_anomalies(df, columns=["daily_data"], window=30)
+        anomaly_df = df[df["daily_data_is_anomaly"]] 
         ax.scatter(anomaly_df.date, anomaly_df['daily_data'], color='red',
                    label='Anomaly', s=3)
     plt.title(title)
