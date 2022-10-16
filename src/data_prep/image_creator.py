@@ -6,6 +6,8 @@ import numpy as np
 from sklearn.preprocessing import minmax_scale
 import io
 
+from util import clean_anomalies
+
 
 INPUT_DIR = sys.argv[1]
 OUTPUT_DIR = sys.argv[2]
@@ -16,7 +18,8 @@ def main():
     print(f"Reading files from {INPUT_DIR}")
     for input_file in os.listdir(INPUT_DIR):
         try:
-            df = pd.read_csv(os.path.join(INPUT_DIR, input_file))
+            df = clean_anomalies(
+                pd.read_csv(os.path.join(INPUT_DIR, input_file)))
             currency_symbol = input_file.split("_")[1].split(".")[0]
             print(f"\nTrying to create image data for {currency_symbol}.")
             tis = np.zeros((IMAGE_SIZE, IMAGE_SIZE, len(df)))
