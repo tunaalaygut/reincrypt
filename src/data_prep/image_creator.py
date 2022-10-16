@@ -1,12 +1,12 @@
 import os
 import sys
+sys.path.append("..")
 import talib as ta
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import minmax_scale
+from utility.util import clean_anomalies
 import io
-
-from util import clean_anomalies
 
 
 INPUT_DIR = sys.argv[1]
