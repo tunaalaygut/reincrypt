@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import os
 import json
 
@@ -48,3 +49,19 @@ def get_sharpe_ratio(daily_returns: list, factor=np.sqrt(252)) -> float:
     std_daily_returns = np.std(daily_returns)
 
     return mean_daily_returns/std_daily_returns * factor
+
+def get_anomalies(crypto_df: pd.DataFrame, 
+                    columns=['Open', 'High', 'Low', 'Close'], window=14):
+    df = crypto_df.copy()
+    for column in columns:
+        r = df[column].rolling(window)
+        df[f"{column}_is_anomaly"] = df[column] > r.mean() + 3 * r.std()
+    return df
+
+def clean_anomalies(crypto_df: pd.DataFrame, 
+                    columns=['Open', 'High', 'Low', 'Close'], window=14):
+    df = get_anomalies(crypto_df, columns, window)
+    for column in columns:
+        df.loc[df[f"{column}_is_anomaly"], column] \
+            = df[column].rolling(window).mean()[df[f"{column}_is_anomaly"]]
+    return df

@@ -16,7 +16,7 @@ def main():
             rimg_str = r.read()
             scalars.append(float(rimg_str.split("$")[1].strip()))
             dates.append(rimg_str.split("$")[-1].strip())
-    plot_daily(daily_returns=scalars, date_begin=dates[0], date_end=dates[-1], 
+    plot_daily(daily_data=scalars, date_begin=dates[0], date_end=dates[-1], 
                title=f"Scalars by Date for {CURRENCY}", y_label="Scalar",
                output_dir=".", output_fname=f"{CURRENCY}_scalar",
                file_suffix=int(datetime.now().timestamp()), color="blue")

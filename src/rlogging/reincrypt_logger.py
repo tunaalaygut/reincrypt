@@ -75,11 +75,13 @@ class VerificationLogger(ReincryptLogger):
         self.final_cumulative_asset = None
         self.cumulative_assets = []
         self.avg_daily_returns = []
+        self.portfolio_method = None
 
     def save(self):
         super(VerificationLogger, self).finish()
         
         result = {
+            "portfolio_method": self.portfolio_method,
             "verification_start": str(self.start),
             "verification_end": str(self.end),
             "verification_duration (m)": self.duration.total_seconds()//60,
