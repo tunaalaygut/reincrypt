@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 from datetime import datetime
-from util import get_anomalies
-
+from r_utils import get_anomalies
 
 
 def plot_daily(daily_data: list, date_begin: str, date_end: str, title: str,

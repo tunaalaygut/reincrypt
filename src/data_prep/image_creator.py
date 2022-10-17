@@ -5,7 +5,7 @@ import talib as ta
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import minmax_scale
-from utility.util import clean_anomalies
+from utility.r_utils import clean_anomalies
 import io
 
 

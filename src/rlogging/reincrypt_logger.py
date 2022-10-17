@@ -4,7 +4,7 @@ sys.path.append("..")
 from utility.plotter import plot_daily
 import json
 from datetime import datetime
-from utility.util import get_sharpe_ratio
+from utility.r_utils import get_sharpe_ratio
 
 
 class ReincryptLogger:

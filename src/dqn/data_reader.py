@@ -2,7 +2,7 @@ import os
 from natsort import natsorted
 import sys
 sys.path.append('../')
-from utility.util import str_to_ndarray
+from utility.r_utils import str_to_ndarray
 
 
 class DataReader:
