@@ -1,9 +1,10 @@
 import os
 import yfinance as yf
+import sys
 
-TICKERS_LIST_PATH = "../../crypto_tickers.txt"
+
+TICKERS_LIST_PATH = sys.argv[1]
 TICKERS = open(TICKERS_LIST_PATH, 'r+').read().splitlines()
-
 OUTPUT_DIRECTORY = "../../crypto_data"
 PERIOD = "max"
 INTERVAL = "1d"
