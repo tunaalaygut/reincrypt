@@ -108,8 +108,9 @@ class VerificationLogger(ReincryptLogger):
         }
 
         file_suffix = int(self.start.timestamp())
+        plot_title = f"Daily Cumulative Assets using {self.portfolio_method}"
         plot_daily(self.cumulative_assets, date_begin=self.date_begin, 
-                   date_end=self.date_end, title="Daily Cumulative Assets", 
+                   date_end=self.date_end, title=plot_title, 
                    y_label="Cumulative Asset", output_dir=self.output_dir, 
                    output_fname="verification_cumulative_assets", 
                    file_suffix=file_suffix, color="red")
