@@ -5,6 +5,7 @@ from utility.plotter import plot_daily
 import json
 from datetime import datetime
 from utility.r_utils import get_sharpe_ratio
+import numpy as np
 
 
 class ReincryptLogger:
@@ -54,6 +55,13 @@ class TrainingLogger(ReincryptLogger):
             "tickers": self.tickers,
             "config": self.config,
             "losses": self.losses,
+            "loss_agg": {
+                "mean": np.mean(self.losses),
+                "median": np.median(self.losses),
+                "min": np.min(self.losses),
+                "max": np.max(self.losses),
+                "std": np.std(self.losses),
+            },
             "num_days": self.config["num_days"],
             "date_begin": self.date_begin,
             "date_end": self.date_end 

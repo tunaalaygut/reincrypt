@@ -55,6 +55,8 @@ def get_anomalies(crypto_df: pd.DataFrame,
     df = crypto_df.copy()
     for column in columns:
         r = df[column].rolling(window)
+        # TODO: This outlier calculation does not seem alright. What if its
+        # smaller etc.?
         df[f"{column}_is_anomaly"] = df[column] > r.mean() + 3 * r.std()
     return df
 
