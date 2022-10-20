@@ -1,10 +1,11 @@
 import os
 import sys
 sys.path.append("..")
-from utility.plotter import plot_daily
+from utility.plotter import plot_daily, plot_losses
 import json
 from datetime import datetime
-from utility.util import get_sharpe_ratio
+from utility.r_utils import get_sharpe_ratio
+import numpy as np
 
 
 class ReincryptLogger:
@@ -54,11 +55,22 @@ class TrainingLogger(ReincryptLogger):
             "tickers": self.tickers,
             "config": self.config,
             "losses": self.losses,
+            "loss_agg": {
+                "mean": np.mean(self.losses),
+                "median": np.median(self.losses),
+                "min": np.min(self.losses),
+                "max": np.max(self.losses),
+                "std": np.std(self.losses),
+            },
             "num_days": self.config["num_days"],
             "date_begin": self.date_begin,
             "date_end": self.date_end 
         }
 
+        file_suffix = int(self.start.timestamp())
+        plot_losses(self.losses, self.config["C"], title=f"Training Loss", 
+                    output_dir=self.output_dir, output_fname="training",
+                    file_suffix=file_suffix, color="orange")
         super(TrainingLogger, self).log_2_file(result=result, 
                                                file_prefix="training")
         print("Training logging finalized.")
@@ -100,8 +112,9 @@ class VerificationLogger(ReincryptLogger):
         }
 
         file_suffix = int(self.start.timestamp())
+        plot_title = f"Daily Cumulative Assets using {self.portfolio_method}"
         plot_daily(self.cumulative_assets, date_begin=self.date_begin, 
-                   date_end=self.date_end, title="Daily Cumulative Assets", 
+                   date_end=self.date_end, title=plot_title, 
                    y_label="Cumulative Asset", output_dir=self.output_dir, 
                    output_fname="verification_cumulative_assets", 
                    file_suffix=file_suffix, color="red")

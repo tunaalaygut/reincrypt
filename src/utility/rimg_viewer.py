@@ -1,6 +1,6 @@
 import sys
 import matplotlib.pyplot as plt
-from util import str_to_ndarray
+from r_utils import str_to_ndarray
 
 
 INPUT_RIMG_PATH = sys.argv[1]

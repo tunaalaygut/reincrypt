@@ -51,16 +51,19 @@ def get_sharpe_ratio(daily_returns: list, factor=np.sqrt(252)) -> float:
     return mean_daily_returns/std_daily_returns * factor
 
 def get_anomalies(crypto_df: pd.DataFrame, 
-                    columns=['Open', 'High', 'Low', 'Close'], window=14):
+                    columns=['Open', 'High', 'Low', 'Close'], window=14, 
+                    threshold=2.5):
     df = crypto_df.copy()
     for column in columns:
         r = df[column].rolling(window)
-        df[f"{column}_is_anomaly"] = df[column] > r.mean() + 3 * r.std()
+        z = (df[column] - r.mean()) / r.std()
+        df[f"{column}_is_anomaly"] = np.abs(z) > threshold
     return df
 
 def clean_anomalies(crypto_df: pd.DataFrame, 
-                    columns=['Open', 'High', 'Low', 'Close'], window=14):
-    df = get_anomalies(crypto_df, columns, window)
+                    columns=['Open', 'High', 'Low', 'Close'], window=14,
+                    threshold=2.5):
+    df = get_anomalies(crypto_df, columns, window, threshold)
     for column in columns:
         df.loc[df[f"{column}_is_anomaly"], column] \
             = df[column].rolling(window).mean()[df[f"{column}_is_anomaly"]]
