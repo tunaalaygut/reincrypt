@@ -1,7 +1,7 @@
 import os
 import sys
 sys.path.append("..")
-from utility.plotter import plot_daily
+from utility.plotter import plot_daily, plot_losses
 import json
 from datetime import datetime
 from utility.r_utils import get_sharpe_ratio
@@ -67,6 +67,10 @@ class TrainingLogger(ReincryptLogger):
             "date_end": self.date_end 
         }
 
+        file_suffix = int(self.start.timestamp())
+        plot_losses(self.losses, self.config["C"], title=f"Training Loss", 
+                    output_dir=self.output_dir, output_fname="training",
+                    file_suffix=file_suffix, color="orange")
         super(TrainingLogger, self).log_2_file(result=result, 
                                                file_prefix="training")
         print("Training logging finalized.")
