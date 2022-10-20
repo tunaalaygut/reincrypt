@@ -9,8 +9,8 @@ def plot_daily(daily_data: list, date_begin: str, date_end: str, title: str,
                file_suffix: int, color: str, extension="png", 
                mark_anomalies=False, figsize=(10, 6), dpi=600):
     # Create x and y data
-    date_begin = datetime.strptime(date_begin, "%Y-%m-%d").date()
-    date_end = datetime.strptime(date_end, "%Y-%m-%d").date()
+    date_begin = datetime.strptime(date_begin.split()[0], "%Y-%m-%d").date()
+    date_end = datetime.strptime(date_end.split()[0], "%Y-%m-%d").date()
     days = pd.date_range(date_begin, date_end, freq='d')
     
     _, ax = plt.subplots(figsize=figsize, dpi=dpi)
