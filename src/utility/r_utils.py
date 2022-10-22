@@ -80,3 +80,8 @@ def bound_scalar(scalar: float, lower_boundary=-20, upper_boundary=20) -> float:
         return upper_boundary
 
     return scalar
+
+
+def neutralize_series(series: list):
+    mean = np.mean(series)
+    return [el - mean for el in series]
