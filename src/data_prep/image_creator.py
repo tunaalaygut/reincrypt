@@ -5,7 +5,7 @@ import talib as ta
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import minmax_scale
-from utility.r_utils import clean_anomalies
+from utility.r_utils import clean_anomalies, bound_scalar
 import io
 
 
@@ -110,8 +110,7 @@ def main():
                     scalar = 0
                 else:
                     scalar = 100
-
-                scalars.append(f'{str(scalar)}\n')
+                scalars.append(f'{str(bound_scalar(scalar))}\n')
                 dates.append(f"{str(df.Date[i])}")
 
             scalars = np.delete(np.array(scalars), delete_idx).tolist()

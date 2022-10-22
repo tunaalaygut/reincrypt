@@ -7,10 +7,10 @@ import json
 def str_to_ndarray(str: str) -> np.ndarray:
     rows = str.split('\n')
     arr = np.ndarray((len(rows), len(rows[0].split())))
-    
+
     for idx, row in enumerate(rows):
         arr[idx, :] = row.split()
-    
+
     return arr
 
 
@@ -22,8 +22,9 @@ def read_config(config_filename: str, output_dir="output"):
     config["experiment_name"] = config_filename
 
     os.makedirs(output_dir, exist_ok=True)
-    
+
     return config
+
 
 def populate_config(config: dict, X):
     """
@@ -50,9 +51,10 @@ def get_sharpe_ratio(daily_returns: list, factor=np.sqrt(252)) -> float:
 
     return mean_daily_returns/std_daily_returns * factor
 
-def get_anomalies(crypto_df: pd.DataFrame, 
-                    columns=['Open', 'High', 'Low', 'Close'], window=14, 
-                    threshold=2.5):
+
+def get_anomalies(crypto_df: pd.DataFrame,
+                  columns=['Open', 'High', 'Low', 'Close'], window=14,
+                  threshold=2.5):
     df = crypto_df.copy()
     for column in columns:
         r = df[column].rolling(window)
@@ -60,7 +62,8 @@ def get_anomalies(crypto_df: pd.DataFrame,
         df[f"{column}_is_anomaly"] = np.abs(z) > threshold
     return df
 
-def clean_anomalies(crypto_df: pd.DataFrame, 
+
+def clean_anomalies(crypto_df: pd.DataFrame,
                     columns=['Open', 'High', 'Low', 'Close'], window=14,
                     threshold=2.5):
     df = get_anomalies(crypto_df, columns, window, threshold)
@@ -68,3 +71,12 @@ def clean_anomalies(crypto_df: pd.DataFrame,
         df.loc[df[f"{column}_is_anomaly"], column] \
             = df[column].rolling(window).mean()[df[f"{column}_is_anomaly"]]
     return df
+
+
+def bound_scalar(scalar: float, lower_boundary=-20, upper_boundary=20) -> float:
+    if scalar < lower_boundary:
+        return lower_boundary
+    if scalar > upper_boundary:
+        return upper_boundary
+
+    return scalar
