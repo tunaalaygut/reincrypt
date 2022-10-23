@@ -113,7 +113,8 @@ def main():
                 scalars.append(f'{str(bound_scalar(scalar))}\n')
                 dates.append(f"{str(df.Date[i])}")
 
-            scalars = np.delete(np.array(scalars), delete_idx).tolist()
+            scalars = np.delete(np.array(scalars), delete_idx).astype(float)\
+                .tolist()
             scalars = neutralize_series(scalars)
             dates = np.delete(np.array(dates), delete_idx).tolist()
 
@@ -130,7 +131,7 @@ def main():
                 image_bytes = io.BytesIO()
                 np.savetxt(image_bytes, image, fmt="%03d")
                 output_str = image_bytes.getvalue().decode() \
-                    + "$\n" + scalar \
+                    + "$\n" + str(scalar) \
                     + "$\n" + dates[idx]
                 image_bytes.close()
 
