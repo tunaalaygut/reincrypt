@@ -5,7 +5,7 @@ import talib as ta
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import minmax_scale
-from utility.r_utils import clean_anomalies, bound_scalar
+from utility.r_utils import clean_anomalies, bound_scalar, neutralize_series
 import io
 
 
@@ -114,6 +114,7 @@ def main():
                 dates.append(f"{str(df.Date[i])}")
 
             scalars = np.delete(np.array(scalars), delete_idx).tolist()
+            scalars = neutralize_series(scalars)
             dates = np.delete(np.array(dates), delete_idx).tolist()
 
             os.makedirs(os.path.join(OUTPUT_DIR, currency_symbol), 
