@@ -1,0 +1,28 @@
+{
+  "num_actions": 3,
+  "max_iterations": 100000,
+  "learning_rate": 0.0001,
+  "epsilon_init": 1.0,
+  "epsilon_min": 0.1,
+  "memory_size": 1000,
+  "B": 10,
+  "C": 1000,
+  "gamma": 0.99,
+  "batch_size": 32,
+  "penalty": 0.05,
+  "patch_size": 6,
+  "projection_dim": 64,
+  "enable_resizing": false,
+  "resized_image_size": 36,
+  "num_heads": 4,
+  "mlp_head_units": [
+    2048,
+    1024
+  ],
+  "transformer_units": [
+    128,
+    64
+  ],
+  "transformer_layers": 8,
+  "description": "We saw some improvement in experiment 7 and now we are trying a longer training."
+}

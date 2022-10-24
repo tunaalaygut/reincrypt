@@ -5,12 +5,24 @@ import talib as ta
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import minmax_scale
-from utility.r_utils import clean_anomalies
+from utility.r_utils import clean_anomalies, bound_scalar, neutralize_series
 import io
+import argparse
 
 
-INPUT_DIR = sys.argv[1]
-OUTPUT_DIR = sys.argv[2]
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', '--indir', required=True, type=str, 
+                    help="Input (raw) data directory.")
+parser.add_argument('-o', '--outdir', required=True, type=str, 
+                    help="Output (rimg) data directory.")
+parser.add_argument('-t', '--type', required=True, type=str, 
+                    help="Image creation type <train> or <verification>")
+args = vars(parser.parse_args())
+
+INPUT_DIR = args["indir"]
+OUTPUT_DIR = args["outdir"]
+TYPE = args["type"]
+IS_TRAIN = (TYPE == "train")
 IMAGE_SIZE = 32
 INTERVAL_START = 7
 
@@ -18,8 +30,9 @@ def main():
     print(f"Reading files from {INPUT_DIR}")
     for input_file in os.listdir(INPUT_DIR):
         try:
-            df = clean_anomalies(
-                pd.read_csv(os.path.join(INPUT_DIR, input_file)))
+            df = pd.read_csv(os.path.join(INPUT_DIR, input_file))
+            df = (clean_anomalies(df) if IS_TRAIN else df)
+            
             currency_symbol = input_file.split("_")[1].split(".")[0]
             print(f"\nTrying to create image data for {currency_symbol}.")
             tis = np.zeros((IMAGE_SIZE, IMAGE_SIZE, len(df)))
@@ -110,11 +123,13 @@ def main():
                     scalar = 0
                 else:
                     scalar = 100
-
+                scalar = (bound_scalar(scalar) if IS_TRAIN else scalar)
                 scalars.append(f'{str(scalar)}\n')
                 dates.append(f"{str(df.Date[i])}")
 
-            scalars = np.delete(np.array(scalars), delete_idx).tolist()
+            scalars = np.delete(np.array(scalars), delete_idx).astype(float)\
+                .tolist()
+            scalars = (neutralize_series(scalars) if IS_TRAIN else scalars)
             dates = np.delete(np.array(dates), delete_idx).tolist()
 
             os.makedirs(os.path.join(OUTPUT_DIR, currency_symbol), 
@@ -130,7 +145,7 @@ def main():
                 image_bytes = io.BytesIO()
                 np.savetxt(image_bytes, image, fmt="%03d")
                 output_str = image_bytes.getvalue().decode() \
-                    + "$\n" + scalar \
+                    + "$\n" + str(scalar) \
                     + "$\n" + dates[idx]
                 image_bytes.close()
 
