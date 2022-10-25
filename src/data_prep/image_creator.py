@@ -25,15 +25,25 @@ TYPE = args["type"]
 IS_TRAIN = (TYPE == "train")
 IMAGE_SIZE = 32
 INTERVAL_START = 7
+TICKERS = []
+
+if IS_TRAIN:
+    with open("../../training_currencies.txt", "r+") as f: 
+        TICKERS = f.read().splitlines()
+else:
+    with open("../../verification_currencies.txt", "r+") as f: 
+        TICKERS = f.read().splitlines()
 
 def main():
     print(f"Reading files from {INPUT_DIR}")
     for input_file in os.listdir(INPUT_DIR):
         try:
+            currency_symbol = input_file.split("_")[1].split(".")[0]
+            if currency_symbol not in TICKERS:
+                continue
             df = pd.read_csv(os.path.join(INPUT_DIR, input_file))
             df = (clean_anomalies(df) if IS_TRAIN else df)
             
-            currency_symbol = input_file.split("_")[1].split(".")[0]
             print(f"\nTrying to create image data for {currency_symbol}.")
             tis = np.zeros((IMAGE_SIZE, IMAGE_SIZE, len(df)))
             intervals = range(INTERVAL_START, INTERVAL_START + IMAGE_SIZE)
@@ -146,7 +156,7 @@ def main():
                 np.savetxt(image_bytes, image, fmt="%03d")
                 output_str = image_bytes.getvalue().decode() \
                     + "$\n" + str(scalar) \
-                    + "$\n" + dates[idx]
+                    + "\n$\n" + dates[idx]
                 image_bytes.close()
 
                 with open(f'{OUTPUT_DIR}/{currency_symbol}/image_{idx}.rimg', 
