@@ -30,7 +30,7 @@ class DataReader:
         date_begin, date_end = None, None
         first_file = natsorted(os.listdir(data_dirs[0]))[start_idx]
         last_file = natsorted(os.listdir(data_dirs[0]))[
-            end_idx if end_idx else -1]
+            end_idx - 1 if end_idx else -1]
 
         with open(os.path.join(data_dirs[0], first_file), "r+") as f:
             date_begin = f.read().split("$")[-1].strip()
