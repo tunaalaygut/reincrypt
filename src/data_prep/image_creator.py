@@ -50,61 +50,60 @@ def main():
             
             for interval in intervals:
                 i = interval - intervals.start
-                # Overlap Studies
+                # Cluster 0 based on technical indicator clustering
                 tis[i][0] = ta.EMA(real=df.Close, timeperiod=interval)  
-                tis[i][1] = ta.DEMA(real=df.Close, timeperiod=interval)  
-                tis[i][2] = ta.KAMA(real=df.Close, timeperiod=interval)  
-                tis[i][3] = ta.MIDPOINT(real=df.Close, timeperiod=interval)  
-                tis[i][4] = ta.SMA(real=df.Close, timeperiod=interval)  
-                tis[i][5] = ta.T3(real=df.Close, timeperiod=interval, 
+                tis[i][1] = ta.KAMA(real=df.Close, timeperiod=interval)  
+                tis[i][2] = ta.MIDPOINT(real=df.Close, timeperiod=interval)  
+                tis[i][3] = ta.SMA(real=df.Close, timeperiod=interval)  
+                tis[i][4] = ta.T3(real=df.Close, timeperiod=interval, 
                                   vfactor=0.7)  
-                tis[i][6] = ta.TRIMA(real=df.Close, timeperiod=interval)  
-                tis[i][7] = ta.WMA(real=df.Close, timeperiod=interval)  
-                tis[i][8] = ta.MA(real=df.Close, timeperiod=interval)  
-                tis[i][9] = ta.MIDPRICE(high=df.High, low=df.Low, 
+                tis[i][5] = ta.TRIMA(real=df.Close, timeperiod=interval)  
+                tis[i][6] = ta.WMA(real=df.Close, timeperiod=interval)  
+                tis[i][7] = ta.MA(real=df.Close, timeperiod=interval)  
+                tis[i][8] = ta.MIDPRICE(high=df.High, low=df.Low, 
                                         timeperiod=interval)  
-                # Momentum Indicators
-                tis[i][10] = ta.ADX(high=df.High, low=df.Low, close=df.Close, 
-                                    timeperiod=interval)
-                tis[i][11] = ta.CCI(high=df.High, low=df.Low, close=df.Close, 
-                                    timeperiod=interval)
-                tis[i][12] = ta.CMO(real=df.Close, timeperiod=interval)
-                tis[i][13] = ta.DX(high=df.High, low=df.Low, close=df.Close, 
-                                   timeperiod=interval)
-                tis[i][14] = ta.MOM(real=df.Close, timeperiod=interval)
-                tis[i][15] = ta.MFI(high=df.High, low=df.Low, close=df.Close, 
-                                    volume=df.Volume, timeperiod=interval)
-                tis[i][16] = ta.RSI(real=df.Close, timeperiod=interval)
-                tis[i][17] = ta.ULTOSC(high=df.High, low=df.Low, close=df.Close, 
+                # Cluster 1 based on technical indicator clustering
+                tis[i][9] = ta.DEMA(real=df.Close, timeperiod=interval)  
+                tis[i][10] = ta.CMO(real=df.Close, timeperiod=interval)
+                tis[i][11] = ta.RSI(real=df.Close, timeperiod=interval)
+                tis[i][12] = ta.ULTOSC(high=df.High, low=df.Low, close=df.Close, 
                                        timeperiod1=interval, 
                                        timeperiod2=interval*2,
                                        timeperiod3=interval*4)
-                tis[i][18] = ta.WILLR(high=df.High, low=df.Low, close=df.Close, 
-                                      timeperiod=interval)
-                tis[i][19] = ta.ADXR(high=df.High, low=df.Low, close=df.Close, 
-                                     timeperiod=interval)
-                tis[i][20] = ta.AROONOSC(high=df.High, low=df.Low,
-                                         timeperiod=interval)
-                tis[i][21] = ta.PLUS_DI(high=df.High, low=df.Low, 
+                tis[i][13] = ta.PLUS_DI(high=df.High, low=df.Low, 
                                         close=df.Close, timeperiod=interval)
-                tis[i][22] = ta.PLUS_DM(high=df.High, low=df.Low,
-                                        timeperiod=interval)
+                tis[i][14] = ta.ADOSC(high=df.High, low=df.Low, close=df.Close, 
+                                      volume=df.Volume, fastperiod=interval-4,
+                                      slowperiod=interval+3) 
+                # Cluster 2 based on technical indicator clustering
+                tis[i][15] = ta.ADX(high=df.High, low=df.Low, close=df.Close, 
+                                    timeperiod=interval)
+                tis[i][16] = ta.CCI(high=df.High, low=df.Low, close=df.Close, 
+                                    timeperiod=interval)
+                tis[i][17] = ta.DX(high=df.High, low=df.Low, close=df.Close, 
+                                   timeperiod=interval)
+                tis[i][18] = ta.MOM(real=df.Close, timeperiod=interval)
+                tis[i][19] = ta.MFI(high=df.High, low=df.Low, close=df.Close, 
+                                    volume=df.Volume, timeperiod=interval)
+                tis[i][20] = ta.WILLR(high=df.High, low=df.Low, close=df.Close, 
+                                      timeperiod=interval)
+                tis[i][21] = ta.ADXR(high=df.High, low=df.Low, close=df.Close, 
+                                     timeperiod=interval)
+                tis[i][22] = ta.AROONOSC(high=df.High, low=df.Low,
+                                         timeperiod=interval)
                 tis[i][23] = ta.ROC(real=df.Close, timeperiod=interval)
                 tis[i][24] = ta.ROCP(real=df.Close, timeperiod=interval)
-                # Volatility Indicators
-                tis[i][25] = ta.ATR(high=df.High, low=df.Low, close=df.Close, 
+                tis[i][25] = ta.TSF(real=df.Close, timeperiod=interval)
+                tis[i][26] = ta.LINEARREG(real=df.Close, timeperiod=interval)
+                # Cluster 3 based on technical indicator clustering
+                tis[i][27] = ta.PLUS_DM(high=df.High, low=df.Low,
+                                        timeperiod=interval)
+                tis[i][28] = ta.ATR(high=df.High, low=df.Low, close=df.Close, 
                                     timeperiod=interval)
-                tis[i][26] = ta.NATR(high=df.High, low=df.Low, close=df.Close, 
+                tis[i][29] = ta.NATR(high=df.High, low=df.Low, close=df.Close, 
                                      timeperiod=interval)
-                # Statistic Functions
-                tis[i][27] = ta.STDDEV(real=df.Close, timeperiod=interval)
-                tis[i][28] = ta.LINEARREG(real=df.Close, timeperiod=interval)
-                tis[i][29] = ta.VAR(real=df.Close, timeperiod=interval)
-                tis[i][30] = ta.TSF(real=df.Close, timeperiod=interval)
-                # Volume Indicators
-                tis[i][31] = ta.ADOSC(high=df.High, low=df.Low, close=df.Close, 
-                                      volume=df.Volume, fastperiod=interval-4,
-                                      slowperiod=interval+3)  
+                tis[i][30] = ta.STDDEV(real=df.Close, timeperiod=interval)
+                tis[i][31] = ta.VAR(real=df.Close, timeperiod=interval)
 
             images = np.zeros((len(df), IMAGE_SIZE, IMAGE_SIZE))
 
