@@ -56,7 +56,67 @@ Downloaded raw data should have the following format for a crpytocurrency:
 ## Training & Validation
 
 ### Train a model
-...
+Once the data is ready, a training configuration needs to be defined in a `.JSON` format with the following fields:
+
+- `num_actions`: Number of actions the DQN will map states into
+- `max_iterations`: Number of iterations the training will take 
+- `learning_rate`: Learning rate for the gradient step
+- `epsilon_init`: Initial epsilon value
+- `epsilon_min`: Minimum epsilon value
+- `memory_size`: Size of the experience replay memory
+- `B`: 10
+- `C`: 1000
+- `gamma`: 0.99
+- `batch_size`: 32
+- `penalty`: 0.05
+- `patch_size`: 6
+- `projection_dim`: 64
+- `enable_resizing`: Whether to enable image resizing
+- `resized_image_size`: Resized image size if `enable_resizing` 
+- `num_heads`: Number of heads in ViT
+- `mlp_head_units`: Definition of MLP units in ViT
+- `transformer_units`: Definition of transformer units in ViT
+- `transformer_layers`: Number of transformer layers in ViT
+- `description`: Description of the configuration
+
+A sample training configuration is as follows:
+
+```JSON
+{
+  "num_actions": 3,
+  "max_iterations": 50000,
+  "learning_rate": 0.0001,
+  "epsilon_init": 1.0,
+  "epsilon_min": 0.1,
+  "memory_size": 1000,
+  "B": 10,
+  "C": 1000,
+  "gamma": 0.99,
+  "batch_size": 32,
+  "penalty": 0.05,
+  "patch_size": 6,
+  "projection_dim": 64,
+  "enable_resizing": false,
+  "resized_image_size": 36,
+  "num_heads": 4,
+  "mlp_head_units": [
+    2048,
+    1024
+  ],
+  "transformer_units": [
+    128,
+    64
+  ],
+  "transformer_layers": 8,
+  "description": "Using k-means clustered technical indicators."
+}
+```
+
+With the configuration created, simply run 
+
+```bash
+python main.py -i <PATH_TO_TRAINING_DATA_DIR> -c configuration.json
+```
 
 ### Verify the model
 ...
