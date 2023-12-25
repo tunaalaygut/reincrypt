@@ -120,13 +120,13 @@ Once the data is ready, a training configuration needs to be defined in a `.JSON
 - `epsilon_init`: Initial epsilon value
 - `epsilon_min`: Minimum epsilon value
 - `memory_size`: Size of the experience replay memory
-- `B`: 10
-- `C`: 1000
-- `gamma`: 0.99
-- `batch_size`: 32
-- `penalty`: 0.05
-- `patch_size`: 6
-- `projection_dim`: 64
+- `B`: Number of iterations before updating the online network weights
+- `C`: Number of iterations before updating the target network weights
+- `gamma`: Discount factor
+- `batch_size`: Batch size
+- `penalty`: Penalty to apply for position change
+- `patch_size`: Transformer patch size
+- `projection_dim`: Transformer projection dimension
 - `enable_resizing`: Whether to enable image resizing
 - `resized_image_size`: Resized image size if `enable_resizing` 
 - `num_heads`: Number of heads in ViT
