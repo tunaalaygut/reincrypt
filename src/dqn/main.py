@@ -1,4 +1,3 @@
-from symbol import star_expr
 import sys
 sys.path.append("..")
 import os

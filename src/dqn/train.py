@@ -2,7 +2,7 @@ import sys
 sys.path.append("..")
 import random
 import numpy as np
-from model import ViT 
+from model import ViT, CNN
 import tensorflow as tf
 from experince_replay import Memory
 from rlogging.reincrypt_logger import TrainingLogger
@@ -38,6 +38,8 @@ class Agent:
     def train(self, config: dict, logger: TrainingLogger):
         online_network = ViT(config)
         target_network = ViT(config)
+        # online_network = CNN(config)
+        # target_network = CNN(config)
         target_network.model.set_weights(online_network.model.get_weights())
 
         height, width = config["height"], config["width"]

@@ -1,6 +1,6 @@
 import tensorflow as tf
 from keras.layers import (Layer, Dense, Flatten, Dropout, Embedding, Input,
-                          LayerNormalization, MultiHeadAttention, Add, Resizing)
+                          LayerNormalization, MultiHeadAttention, Add, Resizing, Conv2D, MaxPooling2D)
 from keras.models import Model, Sequential
 
 
@@ -127,6 +127,66 @@ class ViT:
         self.optimizer.apply_gradients(zip(grads, 
                                            self.model.trainable_variables))
 
+        return loss
+
+    @staticmethod
+    def __custom_loss_func(target, rho, action, batch_size):
+        return tf.reduce_sum(tf.square(target - (rho * action))) / batch_size
+
+class CNN:
+    def __init__(self, config: dict):
+        self.height = config["height"]
+        self.width = config["width"]
+        self.num_actions = config["num_actions"]
+        self.optimizer = tf.keras.optimizers.Adam(
+            learning_rate=config["learning_rate"])
+        self.filters = config.get("filters", [32, 64, 128])
+        self.kernel_size = config.get("kernel_size", 3)
+        self.pool_size = config.get("pool_size", 2)
+        self.dropout_rate = config.get("dropout_rate", 0.5)
+        self.mlp_head_units = config["mlp_head_units"]
+        self.model = self.create_cnn()
+
+    def create_cnn(self):
+        inputs = Input(shape=(self.height, self.width, 1))
+
+        x = inputs
+        for filter_count in self.filters:
+            x = tf.keras.layers.Conv2D(filter_count, self.kernel_size, activation='relu')(x)
+            x = tf.keras.layers.MaxPooling2D(self.pool_size)(x)
+            x = tf.keras.layers.Dropout(self.dropout_rate)(x)
+
+        x = Flatten()(x)
+        features = self.mlp(x, hidden_units=self.mlp_head_units, dropout_rate=self.dropout_rate)
+
+        logits = Dense(self.num_actions)(features)
+        model = Model(inputs=inputs, outputs=logits)
+        return model
+
+    def mlp(self, x, hidden_units: list, dropout_rate):
+        for units in hidden_units:
+            x = Dense(units, activation=tf.nn.gelu)(x)
+            x = Dropout(dropout_rate)(x)
+        return x
+
+    def q_value(self, state, is_training):
+        X = tf.reshape(state, [-1, self.height, self.width, 1])
+        rho = self.model(X, training=is_training)
+        eta = tf.one_hot(tf.argmax(rho, 1),
+                         self.num_actions,
+                         on_value=1,
+                         off_value=0,
+                         dtype=tf.int64)
+        return rho, eta
+
+    def optimize_q(self, S, action, target, batch_size):
+        with tf.GradientTape() as tape:
+            rho = self.q_value(S, True)[0]
+            loss = self.__custom_loss_func(target, rho, action, batch_size)
+
+        grads = tape.gradient(loss, self.model.trainable_variables)
+        self.optimizer.apply_gradients(zip(grads, 
+                                           self.model.trainable_variables))
         return loss
 
     @staticmethod
