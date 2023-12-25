@@ -36,9 +36,34 @@ This section covers the necessary steps to prepare your data for training.
 
 ### Downloading raw data
 
-...
+To download raw cryptocurrency data `ticker_downloader.py` module can be used. However, before you do that you need to create a list of currencies you want to download and write them to a `.txt` file. For example;
 
-Downloaded raw data should have the following format for a crpytocurrency:
+```
+# currencies.txt
+KCS-USD
+WGR-USD
+MYB-USD
+...
+```
+
+```bash
+cd src/data_prep
+python ticker_downloader.py currencies.txt
+```
+
+Running the command above will produce an output similar to the following:
+
+```bash
+[*********************100%***********************]  1 of 1 completed
+KCS-USD downloaded and written to file.
+[*********************100%***********************]  1 of 1 completed
+WGR-USD downloaded and written to file.
+[*********************100%***********************]  1 of 1 completed
+MYB-USD downloaded and written to file.
+...
+```
+
+Downloaded raw data should have the following format for each crpytocurrency:
 | Date                        | Open                     | High                     | Low                      | Close                    | Adj Close                | Volume |
 |-----------------------------|--------------------------|--------------------------|--------------------------|--------------------------|--------------------------|--------|
 | 2017-11-09    | 0.000224  | 0.000297   | 0.0002119   | 0.000282    | 0.0002   | 8605   |
@@ -47,10 +72,41 @@ Downloaded raw data should have the following format for a crpytocurrency:
 | ... |  ... | ... | ... | ... | ... | ... |
 |
 
-### Creating `.RIMG` files
+Ideally, you would have two files `training_currencies.txt` and `verification_currencies.txt` to download training and verification currency data separately. Or you can separate them later. 
 
+### Creating `.RIMG` files
+Once the raw data is downloaded you would need to create `.RIMG` files. `image_creator.py` module does exactly that.
+
+It works by calculating 32 pre-defined and clustered technical indicators for 32 different time intervals, normalizing the calculated values between [0, 255]. Hence, creating a 32x32 grayscale image for each day for each currency.
+
+It also adds the date and a scalar. Scalar is the percentage difference of the currency's closing value from the previous day.
+
+A *minimized* `.rimg` file looks like the following:
+
+```
+000 000 001 005 000 008 009 005 009 127 130 130 255 001 254 255 246 247 254 255 246 255 255 255 255 249 250 000 000 000 000 000
+005 008 000 000 005 003 004 000 000 097 076 076 205 000 238 244 254 254 238 191 255 228 096 221 221 255 255 001 009 009 005 001
+012 009 000 000 013 000 000 000 021 072 040 040 103 002 225 229 235 255 218 135 153 197 082 185 185 235 236 003 017 017 003 000
+020 010 011 005 021 000 000 005 089 052 018 018 000 008 215 211 175 250 145 101 051 168 085 095 095 200 203 006 025 025 010 002
 ...
-<!-- rimg viewer can be used to display the image, add this to paper and thesis -->
+$
+-4.694593226213477
+$
+2018-06-20
+```
+
+#### Visualizing `.RIMG` images
+To visualize the created `.rimg` file(s) one can use `utility/rimg_viewer.py` module.
+
+To use it:
+
+```bash
+python rimg_viewer.py <FILENAME>.rimg 
+```
+
+Which will produce an image similar to following image:
+
+![alt text](sample_rimg.png)
 
 
 ## Training & Validation
@@ -115,8 +171,34 @@ A sample training configuration is as follows:
 With the configuration created, simply run 
 
 ```bash
-python main.py -i <PATH_TO_TRAINING_DATA_DIR> -c configuration.json
+python main.py -i <PATH_TO_TRAINING_DATA_DIR> -c <CONFIG_NAME>.json
 ```
 
+- `-i` or `--input-path` argument is used to indicate the input data directory. 
+- `-c` or `--config'` argument is used to specify which config file to use.
+
 ### Verify the model
-...
+Output of the trained model will be placed under the directory `$WORKSPACE/reincrypt/src/dqn/output/<CONFIG_NAME>` and it will have a structure similar to this:
+
+```bash
+<CONFIG_NAME>
+├── <CONFIG_NAME>_model/
+├── training_<TIMESTAMP>.json
+└── training_<TIMESTAMP>.png
+```
+
+Where `<CONFIG_NAME>_model/` will be the keras model output, .json is the training logs and the .png file is the loss plot of the training. Keras model output can be used to load the model and make inferences.
+
+To create portfolios and validate the model on the verification data set:
+
+```bash
+python main.py -v -i <PATH_TO_VERIFICATION_DATA_DIR> -c <CONFIG_NAME> -m <PATH_TO_CONFIG_NAME_model_DIR>
+```
+
+- `-i` or `--input-path` argument is used to indicate the input data directory. 
+- `-v` or `--verification` flag is used to indicate the program will be run in verification mode.
+- `-c` or `--config'` argument is used to specify which config file to use.
+- `-m` or `--model` argument is used to specify the keras model output created in training phase. Required if `-v` flag is set.
+
+After the verification ...
+ 
