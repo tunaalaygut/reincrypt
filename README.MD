@@ -269,5 +269,9 @@ Verification process, by default, uses market neutral portfolio. In order to use
 
 For example, following example runs a verification using Top/Bottom K porfolio with the K value of **3**:
 ```bash
-python main.py -v -i <PATH_TO_VERIFICATION_DATA_DIR> -c <CONFIG_NAME> -m <PATH_TO_CONFIG_NAME_model_DIR> -k 3
+python main.py -v \
+  -i <PATH_TO_VERIFICATION_DATA_DIR> \
+  -c <CONFIG_NAME> \
+  -m <PATH_TO_CONFIG_NAME_model_DIR> \
+  -k 3
 ```
