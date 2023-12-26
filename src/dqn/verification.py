@@ -16,7 +16,7 @@ def test_portfolio(X, y, config, model_path, logger, K=None):
 
     if K:
         outcome = __validate_top_bottom_k_portfolio(network, X, y, K, logger)
-        logger.portfolio_method = "Top/Bottom K"
+        logger.portfolio_method = f"Top/Bottom K, K={K}"
     else:
         outcome = __validate_neutralized_portfolio(network, X, y, logger)
         logger.portfolio_method = "Market Neutral"
