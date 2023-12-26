@@ -106,7 +106,7 @@ python rimg_viewer.py <FILENAME>.rimg
 
 Which will produce an image similar to following image:
 
-![alt text](sample_rimg.png)
+![alt text](misc/sample_rimg.png)
 
 
 ## Training & Validation
@@ -200,5 +200,74 @@ python main.py -v -i <PATH_TO_VERIFICATION_DATA_DIR> -c <CONFIG_NAME> -m <PATH_T
 - `-c` or `--config'` argument is used to specify which config file to use.
 - `-m` or `--model` argument is used to specify the keras model output created in training phase. Required if `-v` flag is set.
 
-After the verification ...
- 
+After the verification a verification log in `JSON` format and a cumulative asset chart (`.png`) will be created under the same output directory of the model. Output directories structure will be as following.
+
+```bash
+<CONFIG_NAME>
+├── <CONFIG_NAME>_model/
+├── training_<TIMESTAMP>.json
+├── training_<TIMESTAMP>.png
+├── verification_<VERIFICATION_TIMESTAMP>.json
+└── verification_cumulative_assets_<VERIFICATION_TIMESTAMP>.png
+```
+
+An example `verification_<VERIFICATION_TIMESTAMP>.json` file looks like this:
+
+```json
+{
+  "portfolio_method": "Market Neutral",  // Portfolio used
+  "verification_start": "2023-12-26 06:26:33.082213",  // Verification start timestamp
+  "verification_end": "2023-12-26 06:27:18.631933",  // Verification end timestamp
+  "verification_duration (m)": 0.0,  // How long did the verification take?
+  "verification_tickers": [  // Currencies used in the verification
+    "DGC-USD",
+    "TRC-USD",
+    "GLC-USD",
+    "FTC-USD",
+    "NMC-USD",
+    "LTC-USD",
+    "PPC-USD",
+    "BTC-USD"
+  ],
+  "num_tickers": 8,  // # of currencies
+  "config": {  
+    // Model's configuration, as defined in training step,
+    "experiment_name": "experiment_11",
+    "height": 32,
+    "width": 32,
+    "num_days": 366
+  },
+  "results": {
+    "position_change": 225.28317512,  // How many times model changed position
+    "cumulative_asset": 6.14175614,  // Cumulative asset at the end
+    "sharpe_ratio": 2.359828034700596,  // Calculated sharpe ratio
+    "num_days": 366,  // # of verification days 
+    "date_begin": "2021-10-30",  // Verification begin date
+    "date_end": "2022-10-30",  // Verification end date
+    "daily_results": [  // Daily movements made by the model
+      {
+        "day_index": 0,
+        "cumulative_asset": 1,
+        "avg_daily_return": -6.53714439
+      },
+      {
+        "day_index": 1,
+        "cumulative_asset": 0.93462856,
+        "avg_daily_return": 2.23261434
+      },
+      {...},
+    ]
+  }
+}
+```
+
+And a cumulative asset chart:
+
+![alt text](misc/sample_cumulative_asset.png)
+
+Verification process, by default, uses market neutral portfolio. In order to use Top/Bottom-K portfolio you would need to use the `-k` (`--topbottomk`) argument and specify the K value you want to use. 
+
+For example, following example runs a verification using Top/Bottom K porfolio with the K value of **3**:
+```bash
+python main.py -v -i <PATH_TO_VERIFICATION_DATA_DIR> -c <CONFIG_NAME> -m <PATH_TO_CONFIG_NAME_model_DIR> -k 3
+```
