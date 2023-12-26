@@ -36,9 +36,34 @@ This section covers the necessary steps to prepare your data for training.
 
 ### Downloading raw data
 
-...
+To download raw cryptocurrency data `ticker_downloader.py` module can be used. However, before you do that you need to create a list of currencies you want to download and write them to a `.txt` file. For example;
 
-Downloaded raw data should have the following format for a crpytocurrency:
+```
+# currencies.txt
+KCS-USD
+WGR-USD
+MYB-USD
+...
+```
+
+```bash
+cd src/data_prep
+python ticker_downloader.py currencies.txt
+```
+
+Running the command above will produce an output similar to the following:
+
+```bash
+[*********************100%***********************]  1 of 1 completed
+KCS-USD downloaded and written to file.
+[*********************100%***********************]  1 of 1 completed
+WGR-USD downloaded and written to file.
+[*********************100%***********************]  1 of 1 completed
+MYB-USD downloaded and written to file.
+...
+```
+
+Downloaded raw data should have the following format for each crpytocurrency:
 | Date                        | Open                     | High                     | Low                      | Close                    | Adj Close                | Volume |
 |-----------------------------|--------------------------|--------------------------|--------------------------|--------------------------|--------------------------|--------|
 | 2017-11-09    | 0.000224  | 0.000297   | 0.0002119   | 0.000282    | 0.0002   | 8605   |
@@ -47,10 +72,41 @@ Downloaded raw data should have the following format for a crpytocurrency:
 | ... |  ... | ... | ... | ... | ... | ... |
 |
 
-### Creating `.RIMG` files
+Ideally, you would have two files `training_currencies.txt` and `verification_currencies.txt` to download training and verification currency data separately. Or you can separate them later. 
 
+### Creating `.RIMG` files
+Once the raw data is downloaded you would need to create `.RIMG` files. `image_creator.py` module does exactly that.
+
+It works by calculating 32 pre-defined and clustered technical indicators for 32 different time intervals, normalizing the calculated values between [0, 255]. Hence, creating a 32x32 grayscale image for each day for each currency.
+
+It also adds the date and a scalar. Scalar is the percentage difference of the currency's closing value from the previous day.
+
+A *minimized* `.rimg` file looks like the following:
+
+```
+000 000 001 005 ...
+005 008 000 000 ...
+012 009 000 000 ...
+020 010 011 005 ...
 ...
-<!-- rimg viewer can be used to display the image, add this to paper and thesis -->
+$
+-4.694593226213477
+$
+2018-06-20
+```
+
+#### Visualizing `.RIMG` images
+To visualize the created `.rimg` file(s) one can use `utility/rimg_viewer.py` module.
+
+To use it:
+
+```bash
+python rimg_viewer.py <FILENAME>.rimg 
+```
+
+Which will produce an image similar to following image:
+
+![alt text](misc/sample_rimg.png)
 
 
 ## Training & Validation
@@ -64,13 +120,13 @@ Once the data is ready, a training configuration needs to be defined in a `.JSON
 - `epsilon_init`: Initial epsilon value
 - `epsilon_min`: Minimum epsilon value
 - `memory_size`: Size of the experience replay memory
-- `B`: 10
-- `C`: 1000
-- `gamma`: 0.99
-- `batch_size`: 32
-- `penalty`: 0.05
-- `patch_size`: 6
-- `projection_dim`: 64
+- `B`: Number of iterations before updating the online network weights
+- `C`: Number of iterations before updating the target network weights
+- `gamma`: Discount factor
+- `batch_size`: Batch size
+- `penalty`: Penalty to apply for position change
+- `patch_size`: Transformer patch size
+- `projection_dim`: Transformer projection dimension
 - `enable_resizing`: Whether to enable image resizing
 - `resized_image_size`: Resized image size if `enable_resizing` 
 - `num_heads`: Number of heads in ViT
@@ -115,8 +171,107 @@ A sample training configuration is as follows:
 With the configuration created, simply run 
 
 ```bash
-python main.py -i <PATH_TO_TRAINING_DATA_DIR> -c configuration.json
+python main.py -i <PATH_TO_TRAINING_DATA_DIR> -c <CONFIG_NAME>.json
 ```
 
+- `-i` or `--input-path` argument is used to indicate the input data directory. 
+- `-c` or `--config'` argument is used to specify which config file to use.
+
 ### Verify the model
-...
+Output of the trained model will be placed under the directory `$WORKSPACE/reincrypt/src/dqn/output/<CONFIG_NAME>` and it will have a structure similar to this:
+
+```bash
+<CONFIG_NAME>
+├── <CONFIG_NAME>_model/
+├── training_<TIMESTAMP>.json
+└── training_<TIMESTAMP>.png
+```
+
+Where `<CONFIG_NAME>_model/` will be the keras model output, .json is the training logs and the .png file is the loss plot of the training. Keras model output can be used to load the model and make inferences.
+
+To create portfolios and validate the model on the verification data set:
+
+```bash
+python main.py -v -i <PATH_TO_VERIFICATION_DATA_DIR> -c <CONFIG_NAME> -m <PATH_TO_CONFIG_NAME_model_DIR>
+```
+
+- `-i` or `--input-path` argument is used to indicate the input data directory. 
+- `-v` or `--verification` flag is used to indicate the program will be run in verification mode.
+- `-c` or `--config'` argument is used to specify which config file to use.
+- `-m` or `--model` argument is used to specify the keras model output created in training phase. Required if `-v` flag is set.
+
+After the verification a verification log in `JSON` format and a cumulative asset chart (`.png`) will be created under the same output directory of the model. Output directories structure will be as following.
+
+```bash
+<CONFIG_NAME>
+├── <CONFIG_NAME>_model/
+├── training_<TIMESTAMP>.json
+├── training_<TIMESTAMP>.png
+├── verification_<VERIFICATION_TIMESTAMP>.json
+└── verification_cumulative_assets_<VERIFICATION_TIMESTAMP>.png
+```
+
+An example `verification_<VERIFICATION_TIMESTAMP>.json` file looks like this:
+
+```json
+{
+  "portfolio_method": "Market Neutral",  // Portfolio used
+  "verification_start": "2023-12-26 06:26:33.082213",  // Verification start timestamp
+  "verification_end": "2023-12-26 06:27:18.631933",  // Verification end timestamp
+  "verification_duration (m)": 0.0,  // How long did the verification take?
+  "verification_tickers": [  // Currencies used in the verification
+    "DGC-USD",
+    "TRC-USD",
+    "GLC-USD",
+    "FTC-USD",
+    "NMC-USD",
+    "LTC-USD",
+    "PPC-USD",
+    "BTC-USD"
+  ],
+  "num_tickers": 8,  // # of currencies
+  "config": {  
+    // Model's configuration, as defined in training step,
+    "experiment_name": "experiment_11",
+    "height": 32,
+    "width": 32,
+    "num_days": 366
+  },
+  "results": {
+    "position_change": 225.28317512,  // How many times model changed position
+    "cumulative_asset": 6.14175614,  // Cumulative asset at the end
+    "sharpe_ratio": 2.359828034700596,  // Calculated sharpe ratio
+    "num_days": 366,  // # of verification days 
+    "date_begin": "2021-10-30",  // Verification begin date
+    "date_end": "2022-10-30",  // Verification end date
+    "daily_results": [  // Daily movements made by the model
+      {
+        "day_index": 0,
+        "cumulative_asset": 1,
+        "avg_daily_return": -6.53714439
+      },
+      {
+        "day_index": 1,
+        "cumulative_asset": 0.93462856,
+        "avg_daily_return": 2.23261434
+      },
+      {...},
+    ]
+  }
+}
+```
+
+And a cumulative asset chart:
+
+![alt text](misc/sample_cumulative_asset.png)
+
+Verification process, by default, uses market neutral portfolio. In order to use Top/Bottom-K portfolio you would need to use the `-k` (`--topbottomk`) argument and specify the K value (percentage) you want to use. 
+
+For example, following example runs a verification using Top/Bottom K porfolio with the K value of **0.3**:
+```bash
+python main.py -v \
+  -i <PATH_TO_VERIFICATION_DATA_DIR> \
+  -c <CONFIG_NAME> \
+  -m <PATH_TO_CONFIG_NAME_model_DIR> \
+  -k 0.3
+```
