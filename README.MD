@@ -265,13 +265,13 @@ And a cumulative asset chart:
 
 ![alt text](misc/sample_cumulative_asset.png)
 
-Verification process, by default, uses market neutral portfolio. In order to use Top/Bottom-K portfolio you would need to use the `-k` (`--topbottomk`) argument and specify the K value you want to use. 
+Verification process, by default, uses market neutral portfolio. In order to use Top/Bottom-K portfolio you would need to use the `-k` (`--topbottomk`) argument and specify the K value (percentage) you want to use. 
 
-For example, following example runs a verification using Top/Bottom K porfolio with the K value of **3**:
+For example, following example runs a verification using Top/Bottom K porfolio with the K value of **0.3**:
 ```bash
 python main.py -v \
   -i <PATH_TO_VERIFICATION_DATA_DIR> \
   -c <CONFIG_NAME> \
   -m <PATH_TO_CONFIG_NAME_model_DIR> \
-  -k 3
+  -k 0.3
 ```
