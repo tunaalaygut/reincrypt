@@ -6,7 +6,7 @@ import sys
 sys.path.append("..")
 
 
-def test_portfolio(X, y, config, model_path, logger, K=None):
+def test_portfolio(X, y, config, model_path, logger, K=None, random=False):
     """
     Test using top/bottom k portfolio or market neutral portfolio 
     """
@@ -15,7 +15,7 @@ def test_portfolio(X, y, config, model_path, logger, K=None):
     outcome = None
 
     if K:
-        outcome = __validate_top_bottom_k_portfolio(network, X, y, K, logger)
+        outcome = __validate_top_bottom_k_portfolio(network, X, y, K, random, logger)
         logger.portfolio_method = f"Top/Bottom K, K={K}"
     else:
         outcome = __validate_neutralized_portfolio(network, X, y, logger)
@@ -25,7 +25,7 @@ def test_portfolio(X, y, config, model_path, logger, K=None):
     logger.final_cumulative_asset = outcome[1]
 
 
-def __validate_top_bottom_k_portfolio(vit: ViT, X, y, K: float,
+def __validate_top_bottom_k_portfolio(vit: ViT, X, y, K: float, random: bool,
                                       logger: VerificationLogger):
     num_currencies = len(X)
     days = len(X[0])
@@ -48,7 +48,11 @@ def __validate_top_bottom_k_portfolio(vit: ViT, X, y, K: float,
     X = np.array(X)
 
     for t in range(days):
-        cur_action_value, _ = vit.q_value(X[:, t], is_training=False)
+        if random:  # Take this path if random action will be taken
+            cur_action_value = __generate_random_action(len(X))
+        else: 
+            cur_action_value, _ = vit.q_value(X[:, t], is_training=False)
+
         long_signals = cur_action_value[:, 0] - cur_action_value[:, 2]
 
         upper_threshold, lower_threshold = __get_kth(long_signals, K)
@@ -161,6 +165,14 @@ def __get_neutralized_portfolio(actions, num_currencies):
         alpha[c] = np.round(alpha[c] / sum_alpha, 8)
 
     return alpha
+
+
+def __generate_random_action(n: int):
+    probabilities = np.random.rand(n, 3)
+    # Normalize each row to sum to 1 (like softmax)
+    row_sums = probabilities.sum(axis=1).reshape(-1, 1)
+    probabilities /= row_sums
+    return probabilities
 
 
 if __name__ == "__main__":
