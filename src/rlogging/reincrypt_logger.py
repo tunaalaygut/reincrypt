@@ -116,10 +116,10 @@ class VerificationLogger(ReincryptLogger):
         plot_daily(self.cumulative_assets, date_begin=self.date_begin, 
                    date_end=self.date_end, title=plot_title, 
                    y_label="Cumulative Asset", output_dir=self.output_dir, 
-                   output_fname="verification_cumulative_assets", 
+                   output_fname=f"{self.portfolio_method.lower().replace(' ', '_').replace('/', '')}_verification_cumulative_assets", 
                    file_suffix=file_suffix, color="red")
         super(VerificationLogger, self).log_2_file(result=result,
-                                                   file_prefix="verification",
+                                                   file_prefix=f"{self.portfolio_method.lower().replace(' ', '_').replace('/', '')}_verification",
                                                    file_suffix=file_suffix)
         print("Verification logging finalized.")
 

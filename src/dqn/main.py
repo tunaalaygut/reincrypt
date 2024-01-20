@@ -25,12 +25,15 @@ parser.add_argument("-m", "--model", required=False, type=str,
                     help="Path to pretrained model. Required if -v is set.")
 parser.add_argument("-k", "--topbottomk", required=False, type=float,
                     help="K for top/bottom K portfolio")
+parser.add_argument("-r", "--random", action="store_true",
+                    help="Whether to use random actions in portfolio")
 args = vars(parser.parse_args())
 
 # Globals
 DATA_DIR = args["input_path"]
 CONFIG_FILENAME = args["config"]
 IS_TRAINING = not args["verification"]
+RANDOM_ACTIONS = args["random"]
 MODEL_PATH = args["model"] if args["verification"] else None
 if args["verification"] and args["model"] is None:
     parser.error("-v requires -m")
@@ -65,7 +68,7 @@ def main():
     else:
         logger = VerificationLogger(config=config, tickers=TICKERS,
                                     output_dir=OUTPUT_DIR)
-        test_portfolio(X, y, config, MODEL_PATH, logger, K)
+        test_portfolio(X, y, config, MODEL_PATH, logger, K, RANDOM_ACTIONS)
 
     logger.set_dates(date_begin, date_end)
     logger.save()
