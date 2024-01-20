@@ -1,5 +1,5 @@
 from rlogging.reincrypt_logger import VerificationLogger
-from model import ViT, TimeSeriesTransformer
+from model import ViT, ViT
 from keras.models import load_model
 import numpy as np
 import sys
@@ -10,7 +10,7 @@ def test_portfolio(X, y, config, model_path, logger, K=None, random=False):
     """
     Test using top/bottom k portfolio or market neutral portfolio 
     """
-    network = TimeSeriesTransformer(config)
+    network = ViT(config)
     network.model = load_model(model_path, compile=False)
     outcome = None
 
@@ -25,7 +25,7 @@ def test_portfolio(X, y, config, model_path, logger, K=None, random=False):
     logger.final_cumulative_asset = outcome[1]
 
 
-def __validate_top_bottom_k_portfolio(vit: TimeSeriesTransformer, X, y, K: float, random: bool,
+def __validate_top_bottom_k_portfolio(vit: ViT, X, y, K: float, random: bool,
                                       logger: VerificationLogger):
     num_currencies = len(X)
     days = len(X[0])
